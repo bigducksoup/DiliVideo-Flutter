@@ -24,10 +24,10 @@ void main() {
   return runApp(GetMaterialApp(
     initialRoute: "/indexPage",
     getPages: [
-      GetPage(name: '/indexPage', page: () => IndexPage()),
+      GetPage(name: '/indexPage', page: () => const IndexPage()),
       GetPage(
-          name: '/login', page: () => Login(), transition: Transition.fadeIn),
-      GetPage(name: '/publish',page: ()=>PublishPage())
+          name: '/login', page: () => const Login()),
+      GetPage(name: '/publish',page: ()=>const PublishPage())
     ],
     
   ));
@@ -48,8 +48,11 @@ class _IndexPageState extends State<IndexPage> {
   List<Widget> views = [];
 
 
-
+    ///检查token的合法性，
+    ///合法进入首页，
+    ///不合法跳转登录页
     checktoken() async {
+
     var token = await LocalStorge.getValue("token", "".runtimeType);
     if (token != null) {
       var res = await checklogin();
@@ -62,16 +65,17 @@ class _IndexPageState extends State<IndexPage> {
       }else{
         Get.toNamed('/login');
       }
+    }else{
+      Get.toNamed('/login');
     }
   }
 
   @override
   void initState() {
      checktoken();
-    // TODO: implement initState
-    views.add(Home());
-    views.add(Activity());
-    views.add(Mine());
+    views.add(const Home());
+    views.add(const Activity());
+    views.add(const Mine());
 
     super.initState();
   }
