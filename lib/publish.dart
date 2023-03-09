@@ -30,7 +30,7 @@ class _PublishPageState extends State<PublishPage> {
                 },
                 child: const Icon(Icons.arrow_back_ios)),
           ),
-          body: const VideoForm()),
+          body: const SingleChildScrollView(child: VideoForm())),
     );
   }
 }
@@ -236,7 +236,7 @@ class _VideoFormState extends State<VideoForm> {
 
   @override
   void dispose() {
-    _videoController!.dispose();
+    _videoController?.dispose();
     super.dispose();
   }
 

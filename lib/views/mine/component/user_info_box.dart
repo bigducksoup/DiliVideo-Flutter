@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../states/auth_state.dart';
-import '../../theme/colors.dart';
+import '../../../states/auth_state.dart';
+import '../../../theme/colors.dart';
 
 class UserInfoBox extends StatefulWidget {
 

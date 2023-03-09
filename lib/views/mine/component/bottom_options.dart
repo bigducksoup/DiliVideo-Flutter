@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../assets/assets.dart';
+import '../../../assets/assets.dart';
 
 class BottomOptions extends StatelessWidget {
   const BottomOptions({super.key});

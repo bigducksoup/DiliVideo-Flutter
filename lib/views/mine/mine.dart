@@ -1,9 +1,9 @@
 import 'package:dili_video/assets/assets.dart';
-import 'package:dili_video/component/mine/bottom_options.dart';
-import 'package:dili_video/component/mine/options.dart';
-import 'package:dili_video/component/mine/publish_button_box.dart';
-import 'package:dili_video/component/mine/top_button.dart';
-import 'package:dili_video/component/mine/user_info_box.dart';
+import 'package:dili_video/views/mine/component/bottom_options.dart';
+import 'package:dili_video/views/mine/component/options.dart';
+import 'package:dili_video/views/mine/component/publish_button_box.dart';
+import 'package:dili_video/views/mine/component/top_button.dart';
+import 'package:dili_video/views/mine/component/user_info_box.dart';
 import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/theme/colors.dart';
 import 'package:flutter/material.dart';

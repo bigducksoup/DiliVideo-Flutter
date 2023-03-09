@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../assets/assets.dart';
-import '../../theme/colors.dart';
+import '../../../assets/assets.dart';
+import '../../../theme/colors.dart';
 
 
 
