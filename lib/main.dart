@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:dili_video/publish.dart';
 import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/utils/shared_preference.dart';
+import 'package:dili_video/video_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import './views/activity/activity.dart';
 import 'views/home/home.dart';
@@ -17,18 +19,25 @@ import 'http/auth_api.dart';
 import 'http/dio_manager.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized(); 
   initDio();
   // This app is designed only to work vertically, so we limit
   // orientations to portrait up and down.
 
-  return runApp(GetMaterialApp(
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]) //设置为竖屏
+      .then((_) {
+    runApp(GetMaterialApp(
     initialRoute: "/indexPage",
     getPages: [
       GetPage(name: '/indexPage', page: () => const IndexPage()),
       GetPage(name: '/login', page: () => const Login()),
-      GetPage(name: '/publish', page: () => const PublishPage())
+      GetPage(name: '/publish', page: () => const PublishPage()),
+      GetPage(name: '/video', page: ()=>const VideoPage())
     ],
   ));
+  });
+  
+  
 }
 
 class IndexPage extends StatefulWidget {
@@ -84,7 +93,7 @@ class _IndexPageState extends State<IndexPage> {
           ),
         ),
         home: Scaffold(
-          body: Obx(() => views[controller.currentIndex.value]),
+          body: Obx(() => IndexedStack(index: controller.currentIndex.value,children: views,)),
           bottomNavigationBar: Theme(
             data: ThemeData(
               brightness: Brightness.light,

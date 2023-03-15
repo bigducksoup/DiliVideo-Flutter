@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 
+import 'package:get/get.dart' as g;
+
+
 import '../utils/shared_preference.dart';
 
 
@@ -11,8 +14,8 @@ final dio = Dio();
 
 void initDio(){
   dio.options.baseUrl = 'http://127.0.0.1:8084';
-  // dio.options.connectTimeout = const Duration(seconds: 5);
-  // dio.options.receiveTimeout = const Duration(seconds: 3);
+  // dio.options.connectTimeout = const Duration(seconds: 10);
+  // dio.options.receiveTimeout = const Duration(seconds: 10);
 
   dio.interceptors.add(
     InterceptorsWrapper(
@@ -38,6 +41,7 @@ void initDio(){
       return handler.next(e);
     },
     onError: (e, handler){
+      
       return handler.next(e);
     },
   ),
