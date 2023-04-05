@@ -1,8 +1,11 @@
+
+
 import 'dart:convert';
-
+import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get.dart' as get_pack;
 
-import 'package:get/get.dart' as g;
+
 
 
 import '../utils/shared_preference.dart';
@@ -37,11 +40,16 @@ void initDio(){
       return handler.next(options);
     },
     onResponse: ( Response e, handler) {
+      var res = jsonDecode(e.toString());
+
+      if(res['code']!=200){
+        get_pack.Get.defaultDialog(title: "ops!",middleText: "请求出错了 o.o!",backgroundColor:Colors.pink.shade300 );
+      }
 
       return handler.next(e);
     },
     onError: (e, handler){
-      
+      get_pack.Get.defaultDialog(title: "ops!",middleText: "请求出错了 o.o!",backgroundColor:Colors.pink.shade300 );
       return handler.next(e);
     },
   ),

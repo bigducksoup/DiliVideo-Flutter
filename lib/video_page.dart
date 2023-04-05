@@ -1,14 +1,16 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/component/video_page/comment_tabview.dart';
+import 'package:dili_video/danmu_player/barrage_controller.dart';
+import 'package:dili_video/danmu_player/send_barrage.dart';
+import 'danmu_player/barrage.dart';
 import 'package:dili_video/http/content_api.dart';
 import 'package:dili_video/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
-
-import 'assets/assets.dart';
 
 class VideoPage extends StatefulWidget {
   const VideoPage({super.key});
@@ -55,7 +57,6 @@ class _VideoPageState extends State<VideoPage>
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-
     return MaterialApp(
       theme: ThemeData(
           appBarTheme: const AppBarTheme(backgroundColor: Colors.black)),
@@ -69,11 +70,13 @@ class _VideoPageState extends State<VideoPage>
             height: double.infinity,
             child: Column(children: [
               MyVideoPlayer(
+                width: width,
+                height: width*9/16,
                 item: item,
               ),
               Row(
                 children: [
-                  Container(
+                  SizedBox(
                     width: 0.5 * width,
                     child: TabBar(
                         indicatorSize: TabBarIndicatorSize.label,
@@ -88,18 +91,17 @@ class _VideoPageState extends State<VideoPage>
                           Tab(text: "评论")
                         ]),
                   ),
+                  SendBarrage(width: width, videoInfoId: item['videoInfoId'])
                 ],
               ),
               Expanded(
                   child: TabBarView(controller: _tabController, children: [
-                Center(
+                SingleChildScrollView(
                   child: VideoInfoView(
                     item: item,
                   ),
                 ),
-                const Center(
-                  child: FlutterLogo(),
-                )
+                  CommentView(videoInfoId: item['videoInfoId'],)
               ]))
             ]),
           )),
@@ -108,9 +110,11 @@ class _VideoPageState extends State<VideoPage>
 }
 
 class MyVideoPlayer extends StatefulWidget {
-  const MyVideoPlayer({super.key, this.item});
+  const MyVideoPlayer({super.key, this.item, required this.width, required this.height});
 
   final item;
+  final double width;
+  final double height;
 
   @override
   State<MyVideoPlayer> createState() => _MyVideoPlayerState();
@@ -125,11 +129,14 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   Map<String, dynamic> videoPlayState = {"playing": true, "progress": 0.0};
 
+  var barrageController = Get.put<BarrageController>(BarrageController(channelCount: 5));
+
   @override
   void initState() {
     super.initState();
     itemcopy = widget.item;
     getVideoPlayUrl();
+    
   }
 
   @override
@@ -137,9 +144,11 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     if (_videoController != null) {
       _videoController!.dispose();
     }
+    barrageController.dispose();
     super.dispose();
   }
 
+  //获取播放链接
   void getVideoPlayUrl() async {
     var response = await getPlayUrl(itemcopy['videoFileId']);
     var responResult = jsonDecode(response.toString());
@@ -161,8 +170,10 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
       return SizedBox(
           width: double.infinity,
           height: double.infinity,
-          child: CachedNetworkImage(imageUrl: widget.item['coverUrl'],fit: BoxFit.cover,)
-          );
+          child: CachedNetworkImage(
+            imageUrl: widget.item['coverUrl'],
+            fit: BoxFit.cover,
+          ));
     } else {
       _videoController!.addListener(() {
         setState(() {
@@ -199,6 +210,13 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
               child: buildPlayerWindow(),
             ),
           ),
+
+          // Barrage(
+          //   width: width,
+          //   height: width*9/16,
+          //   barrageController: barrageController,
+          // ),
+
           //控制层
           GestureDetector(
             onTap: () {
@@ -229,7 +247,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                               },
                               child: const Icon(
                                 Icons.arrow_back_ios_new,
-                                color: Colors.white,
+                                color: Colors.pink,
                               ),
                             )
                           ],
@@ -251,7 +269,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                                       },
                                       child: const Icon(
                                         Icons.pause,
-                                        color: Colors.white,
+                                        color: Colors.pink,
                                         size: 35,
                                       ),
                                     )
@@ -264,7 +282,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                                       },
                                       child: const Icon(
                                         Icons.play_arrow,
-                                        color: Colors.white,
+                                        color: Colors.pink,
                                         size: 35,
                                       ),
                                     ),
@@ -296,7 +314,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                                     })),
                             const FaIcon(
                               FontAwesomeIcons.maximize,
-                              color: Colors.white,
+                              color: Colors.pink,
                             )
                           ],
                         ),
@@ -312,11 +330,6 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     );
   }
 }
-
-
-
-
-
 
 class VideoInfoView extends StatefulWidget {
   const VideoInfoView({super.key, this.item});
@@ -348,10 +361,10 @@ class _VideoInfoViewState extends State<VideoInfoView> {
     super.initState();
     getVideoAuthorInfo(widget.item['videoAuthorId']).then((value) {
       var responseResult = jsonDecode(value.toString());
-      if(mounted){
+      if (mounted) {
         setState(() {
-        _videoUserInfo = responseResult['data'];
-      });
+          _videoUserInfo = responseResult['data'];
+        });
       }
     });
   }
@@ -360,16 +373,16 @@ class _VideoInfoViewState extends State<VideoInfoView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        UserInfoRow(videoUserInfo: _videoUserInfo,),
-        VideoTitleAndInfo(videoInfo: widget.item,)
+        UserInfoRow(
+          videoUserInfo: _videoUserInfo,
+        ),
+        VideoTitleAndInfo(
+          videoInfo: widget.item,
+        )
       ],
     );
   }
 }
-
-
-
-
 
 class UserInfoRow extends StatelessWidget {
   const UserInfoRow({super.key, this.videoUserInfo});
@@ -379,135 +392,145 @@ class UserInfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-          padding: const EdgeInsets.fromLTRB(10, 18, 10, 18),
-          child: Container(
-            height: 50,
-            width: double.infinity,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+      padding: const EdgeInsets.fromLTRB(10, 18, 10, 18),
+      child: Container(
+        height: 50,
+        width: double.infinity,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(50)),
+              clipBehavior: Clip.hardEdge,
+              width: 40,
+              height: 40,
+              child: Image.network(
+                videoUserInfo['avatarUrl'],
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(child: Text("ops!"));
+                },
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(50)),
-                  clipBehavior: Clip.hardEdge,
-                  width: 40,
-                  height: 40,
-                  child: Image.network(
-                    videoUserInfo['avatarUrl'],
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Center(child: Text("ops!"));
-                    },
-                  ),
+                Text(videoUserInfo['nickname'],
+                    style: TextStyle(
+                        color: Colors.pink.shade400,
+                        fontWeight: FontWeight.w600)),
+                Text(
+                  "${videoUserInfo['followerCount']}粉丝",
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w300),
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(videoUserInfo['nickname'],
-                        style: TextStyle(
-                            color: Colors.pink.shade400,
-                            fontWeight: FontWeight.w600)),
-                    Text(
-                      "${videoUserInfo['followerCount']}粉丝",
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w300),
-                    ),
-                  ],
-                ),
-                const Expanded(child: SizedBox()),
-                SizedBox(
-                    width: 80,
-                    height: 30,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text("关注"),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.pink.shade300)
-                      ),
-                    )),
-                const SizedBox(
-                  width: 10,
-                )
               ],
             ),
-          ),
-        );
+            const Expanded(child: SizedBox()),
+            SizedBox(
+                width: 80,
+                height: 30,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: const Text("关注"),
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll(Colors.pink.shade300)),
+                )),
+            const SizedBox(
+              width: 10,
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 
-
-
-
 class VideoTitleAndInfo extends StatelessWidget {
-   VideoTitleAndInfo({super.key, this.videoInfo});
+  const VideoTitleAndInfo({super.key, this.videoInfo});
   final videoInfo;
 
-  
-
-  List<Widget> buildIcons(){
+  List<Widget> buildIcons() {
     List<Widget> icons = [];
     double size = 35;
     Color color = Colors.white54;
-    TextStyle textStyle = TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      color: color
-    );
-    icons.add(
-      Column(
-        children: [
-          Icon(Icons.favorite,size: size,color: color,),
-          SizedBox(height: 5,),
-          Text("点赞",style:textStyle)
-        ],
-      )
-    );
-    icons.add(
-      Column(
-        children: [
-          Icon(Icons.heart_broken_rounded,size: size,color: color,),
-          SizedBox(height: 5,),
-          Text("不喜欢",style:textStyle)
-        ],
-      )
-    );    
-  icons.add(
-      Column(
-        children: [
-          Icon(Icons.control_point_rounded,size: size,color: color,),
-          SizedBox(height: 5,),
-          Text("投币",style:textStyle)
-        ],
-      )
-    );
-    icons.add(
-      Column(
-        children: [
-          Icon(Icons.star_rate_rounded,size: size,color: color,),
-          SizedBox(height: 5,),
-          Text("收藏",style:textStyle)
-        ],
-      )
-    );
-    icons.add(
-      Column(
-        children: [
-          Icon(Icons.share_rounded,size: size,color: color,),
-          SizedBox(height: 5,),
-          Text("分享",style:textStyle)
-        ],
-      )
-    );
-
+    TextStyle textStyle =
+        TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: color);
+    icons.add(Column(
+      children: [
+        Icon(
+          Icons.thumb_up_alt_outlined,
+          size: size,
+          color: color,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Text("点赞", style: textStyle)
+      ],
+    ));
+    icons.add(Column(
+      children: [
+        Icon(
+          Icons.thumb_down_alt_outlined,
+          size: size,
+          color: color,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Text("不喜欢", style: textStyle)
+      ],
+    ));
+    icons.add(Column(
+      children: [
+        Icon(
+          Icons.control_point_rounded,
+          size: size,
+          color: color,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Text("投币", style: textStyle)
+      ],
+    ));
+    icons.add(Column(
+      children: [
+        Icon(
+          Icons.star_rate_rounded,
+          size: size,
+          color: color,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Text("收藏", style: textStyle)
+      ],
+    ));
+    icons.add(Column(
+      children: [
+        Icon(
+          Icons.share_rounded,
+          size: size,
+          color: color,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Text("分享", style: textStyle)
+      ],
+    ));
 
     return icons;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -518,29 +541,60 @@ class VideoTitleAndInfo extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(videoInfo['title'],style: const TextStyle(color: Colors.white,fontSize: 20),),
-          SizedBox(height: 10,),
+          Text(
+            videoInfo['title'],
+            style: const TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
           Row(
             children: [
-              Icon(Icons.play_arrow_outlined,size: 20,color: Colors.white30,weight: 10,),
-              Text("${videoInfo['watchCount']}",style: TextStyle(color: Colors.white30),),
-              SizedBox(width: 10,),
-              Icon(Icons.comment,size: 20,color: Colors.white30,),
-              SizedBox(width: 5,),
-              Text("${videoInfo['commentCount']}",style: TextStyle(color: Colors.white30),),
-              SizedBox(width: 10,),
-              Text("${(videoInfo['createTime'] as String).substring(0,16)}",style: TextStyle(color: Colors.white30),)
-
+              const Icon(
+                Icons.play_arrow_outlined,
+                size: 20,
+                color: Colors.white30,
+                weight: 10,
+              ),
+              Text(
+                "${videoInfo['watchCount']}",
+                style: const TextStyle(color: Colors.white30),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              const Icon(
+                Icons.comment,
+                size: 20,
+                color: Colors.white30,
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              Text(
+                "${videoInfo['commentCount']}",
+                style: const TextStyle(color: Colors.white30),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                (videoInfo['createTime'] as String).substring(0, 16),
+                style: const TextStyle(color: Colors.white30),
+              )
             ],
           ),
-          SizedBox(height: 5,),
-          Text("${videoInfo['summary']}",style: TextStyle(color: Colors.white30)),
-          SizedBox(height: 20,),
+          const SizedBox(
+            height: 5,
+          ),
+          Text("${videoInfo['summary']}",
+              style: const TextStyle(color: Colors.white30)),
+          const SizedBox(
+            height: 20,
+          ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: buildIcons()
-          )
-
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: buildIcons())
         ],
       ),
     );

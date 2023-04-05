@@ -76,7 +76,7 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   void initState() {
-    checktoken();
+     checktoken();
     views.add(const Home());
     views.add(const Activity());
     views.add(const Mine());

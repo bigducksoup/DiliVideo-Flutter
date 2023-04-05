@@ -54,10 +54,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin,Automat
                           onTap: () {
                             indexController.currentIndex.value = 2;
                           },
-                          child: CachedNetworkImage(
+                          child: auth_state.avatarUrl.value != '' ? CachedNetworkImage(
                             imageUrl:auth_state.avatarUrl.value,width: 50,height: 50,fit: BoxFit.cover,
                             errorWidget: (context, url, error) => Container(color: Colors.white,),
-                            )
+                            ):const SizedBox()
                         ),
                       )),
                   Expanded(
