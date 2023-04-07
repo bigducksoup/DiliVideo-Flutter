@@ -16,25 +16,24 @@ class CommentView extends StatefulWidget {
   State<CommentView> createState() => _CommentViewState();
 }
 
-class _CommentViewState extends State<CommentView>
-    with AutomaticKeepAliveClientMixin {
-  TextEditingController commentController =
-      Get.put<TextEditingController>(TextEditingController());
+class _CommentViewState extends State<CommentView> with AutomaticKeepAliveClientMixin {
+
+  TextEditingController commentController = Get.put<TextEditingController>(TextEditingController());
 
   FocusNode commentInputFocusNode = Get.put(FocusNode());
+
+  final ScrollController _commentListScrollController = ScrollController();
 
   int page = 1;
   int mode = 1;
   List commentList = [];
-
   String replyToid = "";
 
 
-  void setReplyToid(String id){
-    replyToid = id;
-    print(id);
-  }
 
+  void setReplyToid(String id) {
+    replyToid = id;
+  }
 
   void send(String value) async {
     //判断输入为空提示
@@ -46,14 +45,23 @@ class _CommentViewState extends State<CommentView>
       return;
     }
 
-    //发送评论请求
-    var response = await sendComment(value, widget.videoInfoId);
-    var res = jsonDecode(response.toString());
-    if (res['code'] != 200) {
-      return;
+    if (replyToid == "") {
+      //发送评论请求
+      var response = await sendComment(value, widget.videoInfoId);
+      var res = jsonDecode(response.toString());
+      TextToast.showToast(res['msg']);
+      if (res['code'] != 200) return;
+      //toast
+    }else{
+      //发送回复请求
+      var response = await replyComment(value, replyToid, replyToid);
+      var res = jsonDecode(response.toString());
+      TextToast.showToast(res['msg']);
+      if (res['code'] != 200) return;
+      //toast
+      
     }
-    //toast
-    TextToast.showToast(res['msg']);
+    commentInputFocusNode.unfocus();
     commentController.clear();
   }
 
@@ -61,16 +69,34 @@ class _CommentViewState extends State<CommentView>
     var response = await getComment(page, mode, widget.videoInfoId);
     var res = jsonDecode(response.toString());
 
+    if(res['code']!=200){
+      TextToast.showToast(res['msg']);
+      return;
+    }
+
+    if((res['data'] as List).isEmpty){
+      return;
+    }
+
     setState(() {
-      commentList = res['data'];
+      commentList.addAll(res['data']);
+    });
+    page++;
+  }
+
+  void addFocusNodeListener() {
+    commentInputFocusNode.addListener(() {
+      if (!commentInputFocusNode.hasFocus) {
+        setReplyToid("");
+      }
     });
   }
 
 
-  void addFocusNodeListener(){
-    commentInputFocusNode.addListener(() {
-      if(!commentInputFocusNode.hasFocus){
-        setReplyToid("");
+  void addCommentScrollToBottomListener(){
+    _commentListScrollController.addListener(() {
+      if(_commentListScrollController.offset >= _commentListScrollController.position.maxScrollExtent && !_commentListScrollController.position.outOfRange){
+        getComments();
       }
     });
   }
@@ -79,6 +105,7 @@ class _CommentViewState extends State<CommentView>
   void initState() {
     getComments();
     addFocusNodeListener();
+    addCommentScrollToBottomListener();
     super.initState();
   }
 
@@ -91,86 +118,102 @@ class _CommentViewState extends State<CommentView>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: () async {},
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                return Comment(
-                  likeCount: commentList[index]['likeCount'],
-                  id: commentList[index]['id'],
-                  avatarUrl: commentList[index]['userAvatarUrl'],
-                  userName: commentList[index]['userNickname'],
-                  date: (commentList[index]['createTime'] as String)
-                      .split("T")[0],
-                  content: commentList[index]['content'],
-                  children: commentList[index]['children'],
-                  userId: commentList[index]['userId'],
-                  setReplyToid: setReplyToid,
-                );
-              },
-              itemCount: commentList.length,
+    super.build(context);
+    return GestureDetector(
+      onTap: () {
+        if (commentInputFocusNode.hasFocus) {
+          commentInputFocusNode.unfocus();
+        } else {
+          return;
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {},
+              child: ListView.builder(
+                controller: _commentListScrollController,
+                itemBuilder: (context, index) {
+                  return Comment(
+                    likeCount: commentList[index]['likeCount'],
+                    id: commentList[index]['id'],
+                    avatarUrl: commentList[index]['userAvatarUrl'],
+                    userName: commentList[index]['userNickname'],
+                    date: (commentList[index]['createTime'] as String)
+                        .split("T")[0],
+                    content: commentList[index]['content'],
+                    children: commentList[index]['children'],
+                    userId: commentList[index]['userId'],
+                    setReplyToid: setReplyToid,
+                  );
+                },
+                itemCount: commentList.length,
+              ),
             ),
           ),
-        ),
 
-        ///
-        ///底部评论输入框
-        ///
-        Container(
-          height: 80,
-          width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-          decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.grey, width: 0.2))),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: Container(
-                          height: 40,
-                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          decoration: BoxDecoration(
-                              color: Colors.grey.shade700,
-                              borderRadius: BorderRadius.circular(50)),
-                          child: Center(
-                            child: SizedBox(
-                              height: 30,
-                              child: TextField(
-                                  focusNode: commentInputFocusNode,
-                                  controller: commentController,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                  ),
-                                  cursorColor: Colors.pink,
-                                  onSubmitted: send),
-                            ),
-                          ))),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  GestureDetector(
-                      onTap: () {
-                        send(commentController.text);
-                      },
-                      child: Icon(
-                        Icons.send,
-                        size: 30,
-                        color: Colors.pink.shade300,
-                      ))
-                ],
-              ),
-            ],
-          ),
-        )
-      ],
+          ///
+          ///底部评论输入框
+          ///
+          Container(
+            height: 80,
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+            decoration: const BoxDecoration(
+                border:
+                    Border(top: BorderSide(color: Colors.grey, width: 0.2))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                        child: Container(
+                            height: 40,
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade700,
+                                borderRadius: BorderRadius.circular(50)),
+                            child: Center(
+                              child: Container(
+                                height: 40,
+                                child: TextField(
+                                  maxLines: 1,
+                                    focusNode: commentInputFocusNode,
+                                    controller: commentController,
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.all(0)
+                                    ),
+                                    cursorColor: Colors.pink,
+                                    onSubmitted: send,
+                                    
+                                    ),
+                              ),
+                            ))),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    GestureDetector(
+                        onTap: () {
+                          send(commentController.text);
+                        },
+                        child: Icon(
+                          Icons.send,
+                          size: 30,
+                          color: Colors.pink.shade300,
+                        ))
+                  ],
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 

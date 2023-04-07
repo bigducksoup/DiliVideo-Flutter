@@ -26,9 +26,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin,Automat
   @override
   Widget build(BuildContext context) {
         super.build(context);
-    const _pinkTextStyle = TextStyle(
-      color: Colors.pink,
-    );
+
 
     return Container(
       color: Colors.black,

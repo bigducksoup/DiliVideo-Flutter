@@ -12,7 +12,20 @@ Future sendComment(String content,String videoInfoId) async {
 }
 
 
-//获取所有分区
+Future replyComment(String content,String fatherCommentId,String replyToId,{int ifDirect = 1}) async {
+  var response = dio.post('/main/comment/replyToComment',data: {
+    "content":content,
+    "fatherId":fatherCommentId,
+    "replyToId":replyToId,
+    "ifDirect":ifDirect
+  });
+  return response;
+}
+
+
+
+
+
 Future getComment(int page,int mode,String videoInfoId) async {
   var response = dio.get('/main/comment/comment_item',queryParameters: {
     "videoInfoId":videoInfoId,

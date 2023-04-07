@@ -19,7 +19,7 @@ class TextToast{
             borderRadius: BorderRadius.circular(10)
           ),
           child:
-            Center(child: Text(msg,style: const TextStyle(decoration: TextDecoration.none,color: Colors.white,fontSize: 20),),),
+            Center(child: Text(msg,style: const TextStyle(decoration: TextDecoration.none,color: Colors.white,fontSize: 15),),),
         ),
       )
     );

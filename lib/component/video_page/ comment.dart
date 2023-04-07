@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/theme/colors.dart';
+import 'package:dili_video/utils/success_fail_dialog_util.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class Comment extends StatelessWidget {
   Comment(
@@ -16,7 +19,8 @@ class Comment extends StatelessWidget {
       required this.id,
       required this.likeCount,
       required this.children,
-      required this.userId, required this.setReplyToid});
+      required this.userId,
+      required this.setReplyToid});
 
   final String avatarUrl;
 
@@ -37,10 +41,7 @@ class Comment extends StatelessWidget {
 
   final List children;
 
-
   final Function(String id) setReplyToid;
-
-
 
   TextEditingController commentController = Get.find<TextEditingController>();
 
@@ -48,7 +49,6 @@ class Comment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       decoration: const BoxDecoration(
           border: Border(bottom: BorderSide(color: Colors.grey, width: 0.1))),
@@ -94,6 +94,10 @@ class Comment extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(0, 0, 15, 10),
             child: GestureDetector(
               onTap: () {
+                if (commentInputFocusNode.hasFocus) {
+                  commentInputFocusNode.unfocus();
+                  return;
+                }
                 setReplyToid(id);
                 FocusScope.of(context).requestFocus(commentInputFocusNode);
               },
@@ -107,11 +111,11 @@ class Comment extends StatelessWidget {
                     child: Text(
                       content,
                       style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w100,
-                          height: 1.7,
-                          ),
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w100,
+                        height: 1.7,
+                      ),
                       softWrap: true,
                     ),
                   ),
@@ -207,8 +211,11 @@ class CommentChildren extends StatelessWidget {
   ///
   void popCommentDetail(ctx) {
     Get.bottomSheet(
-        ReplyBottomSheetContent(
-          fatherCommentId: fatherCommentId,
+        Container(
+          margin: EdgeInsets.only(top: (MediaQuery.of(ctx).size.width * 9 / 16) + 56),
+          child: ReplyBottomSheetContent(
+            fatherCommentId: fatherCommentId,
+          ),
         ),
         isScrollControlled: true);
   }
@@ -267,23 +274,60 @@ class ReplyBottomSheetContent extends StatefulWidget {
 
 class _ReplyBottomSheetContentState extends State<ReplyBottomSheetContent> {
   List data = [];
+  FocusNode focusNode = FocusNode();
+  TextEditingController textEditingController = TextEditingController();
+
+  String _replyId = "";
 
   void getdata() async {
     var res = await getReply(widget.fatherCommentId);
-
     res = jsonDecode(res.toString());
-
     if (res['code'] != 200) return;
-
     setState(() {
       data = res['data'];
     });
   }
 
+
+  void setReplyId(String id){
+    _replyId = id;
+  }
+
+
+
+  void reply(String content)async{
+    
+    if(content.isEmpty){
+      TextToast.showToast("内容不能为空哦");
+      return;
+    }
+
+    var response =  await replyComment(content, widget.fatherCommentId, _replyId);
+    var res = jsonDecode(response.toString());
+    TextToast.showToast(res['msg']);
+    if(res['code']==200){
+      textEditingController.clear();
+      focusNode.unfocus();
+    }
+    
+
+  }
+
+
+
   @override
   void initState() {
+    setReplyId(widget.fatherCommentId);
     super.initState();
     getdata();
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    textEditingController.dispose();
+    focusNode.dispose();
   }
 
   @override
@@ -310,14 +354,28 @@ class _ReplyBottomSheetContentState extends State<ReplyBottomSheetContent> {
           ///回复列表
           ///
           Expanded(
-            child: Container(
-              width: double.infinity,
-              color: Colors.black,
-              child: ListView.builder(
-                itemBuilder: (context, index) => buildReplyItem(index),
-                itemCount: data.length,
+            child: GestureDetector(
+              onTap: () {
+                if(focusNode.hasFocus){
+                  focusNode.unfocus();
+                  setReplyId(widget.fatherCommentId);
+                }
+              },
+              child: Container(
+                width: double.infinity,
+                color: Colors.black,
+                child: ListView.builder(
+                  itemBuilder: (context, index) => buildReplyItem(index),
+                  itemCount: data.length,
+                ),
               ),
             ),
+          ),
+          buildInput(),
+          Container(
+            width: double.infinity,
+            height: 30,
+            color: Colors.black,
           )
         ],
       ),
@@ -346,49 +404,65 @@ class _ReplyBottomSheetContentState extends State<ReplyBottomSheetContent> {
                 // crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    height: 30,
-                    width: 30,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50)
-                    ),
-                    clipBehavior: Clip.hardEdge,
-                    child: CachedNetworkImage(imageUrl: data[index]['avatar'],fit: BoxFit.cover,)),
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50)),
+                      clipBehavior: Clip.hardEdge,
+                      child: CachedNetworkImage(
+                        imageUrl: data[index]['avatar'],
+                        fit: BoxFit.cover,
+                      )),
                 ],
               ),
             ),
           ),
           Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8,),
-                  Text(data[index]['replierName'],style: TextStyle(color: Colors.white,fontSize: 15),),
-                  Text((data[index]['time'] as String).split("T")[0],style: TextStyle(color: Colors.white,fontSize: 13), ),
-                  const SizedBox(height: 10,),
-                  Text.rich(
-                    TextSpan(
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.white
-                      ),
-                      children: [
-                        const TextSpan(
-                          text: "回复"
-                        ),
-                        TextSpan(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                data[index]['replierName'],
+                style: const TextStyle(color: Colors.white, fontSize: 15),
+              ),
+              Text(
+                (data[index]['time'] as String).split("T")[0],
+                style: const TextStyle(color: Colors.white, fontSize: 13),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text.rich(
+                TextSpan(
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                    children: [
+                      const TextSpan(text: "回复"),
+                      TextSpan(
                           text: "@${data[index]['toName']}",
-                          style: const TextStyle(color: Color(0xff64b2f1))
-                        ),
-                        TextSpan(
-                          text: "${data[index]['content']}"
-                        )
-                      ]
-                    ),
-                    softWrap: true,
-                  ),
-                  const SizedBox(height: 10,)
-                ],
-              ))
+                          style: const TextStyle(color: Color(0xff64b2f1))),
+                      TextSpan(
+                        text: ": ${data[index]['content']}",
+                        recognizer: TapGestureRecognizer()..onTap =() {
+                          if(focusNode.hasFocus){
+                            focusNode.unfocus();
+                            setReplyId(widget.fatherCommentId);
+                            return;
+                          }
+                          setReplyId(data[index]['id']);
+                          FocusScope.of(context).requestFocus(focusNode);
+                        }
+                      )
+                    ]),
+                softWrap: true,
+              ),
+              const SizedBox(
+                height: 10,
+              )
+            ],
+          ))
         ],
       ),
     );
@@ -415,5 +489,48 @@ class _ReplyBottomSheetContentState extends State<ReplyBottomSheetContent> {
             ))
       ]),
     );
+  }
+
+
+
+  Widget buildInput(){
+    return Container(
+            padding: const EdgeInsets.fromLTRB(5, 13, 5, 0),
+            width: double.infinity,
+            height: 50,
+            color: Colors.black,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: maindarkcolor,
+                    ),
+                    height: 40,
+                    child: TextField(
+                      maxLines: 1,
+                      controller: textEditingController,
+                      focusNode: focusNode,
+                      cursorColor: Colors.pink.shade300,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.fromLTRB(5, 0, 5, 10)
+                      ),
+                      style: const TextStyle(
+                        color: Colors.white
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                GestureDetector(
+                  onTap: () {
+                    reply(textEditingController.text);
+                  },
+                  child: const Icon(Icons.send,size: 30,color: Colors.pink,))
+              ],
+            ),
+          );
   }
 }
