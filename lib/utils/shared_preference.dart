@@ -58,6 +58,12 @@ class LocalStorge{
 
   }
 
+
+  static remove(String key)async{
+    SharedPreferences localstorge = await SharedPreferences.getInstance();
+    return localstorge.remove(key);
+  }
+
 }
 
 

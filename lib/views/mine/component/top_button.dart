@@ -7,28 +7,28 @@ class TopButton extends StatelessWidget {
   const TopButton({super.key});
 
     static const List<Widget> _buttonlist = [
-    Icon(
-      Icons.scanner_outlined,
-      size: 30,
-      color: Colors.white,
-      weight: 1,
-    ),
-    SizedBox(
-      width: 20,
-    ),
-    Icon(
-      Icons.adobe,
-      size: 30,
-      color: Colors.white,
-    ),
-    SizedBox(
-      width: 20,
-    ),
-    Icon(
-      Icons.wb_sunny_outlined,
-      size: 30,
-      color: Colors.white,
-    )
+    // Icon(
+    //   Icons.scanner_outlined,
+    //   size: 30,
+    //   color: Colors.white,
+    //   weight: 1,
+    // ),
+    // SizedBox(
+    //   width: 20,
+    // ),
+    // Icon(
+    //   Icons.adobe,
+    //   size: 30,
+    //   color: Colors.white,
+    // ),
+    // SizedBox(
+    //   width: 20,
+    // ),
+    // Icon(
+    //   Icons.wb_sunny_outlined,
+    //   size: 30,
+    //   color: Colors.white,
+    // )
   ];
 
   @override

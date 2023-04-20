@@ -132,7 +132,11 @@ class _CommentViewState extends State<CommentView> with AutomaticKeepAliveClient
         children: [
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () async {},
+              onRefresh: () async {
+                page=1;
+                commentList.clear();
+                getComments();
+              },
               child: ListView.builder(
                 controller: _commentListScrollController,
                 itemBuilder: (context, index) {

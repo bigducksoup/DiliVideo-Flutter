@@ -42,7 +42,7 @@ Future getLatestRecommend(int page) async {
   return response;
 }
 
-
+//获取播放链接
 Future getPlayUrl(String videoId) async {
   var response = dio.get('/content/video_info/get_playurl',queryParameters: {
     "videoId":videoId
@@ -50,11 +50,53 @@ Future getPlayUrl(String videoId) async {
   return response;
 }
 
-
+//获取视频作者信息
 Future getVideoAuthorInfo(String authorId) async {
   var response = dio.get('/content/video_info/get_authorInfo',queryParameters: {
     "authorId":authorId
   });
+  return response;
+}
+
+
+
+//获取稿件
+Future getUploadedVideos(int page) async {
+  var response = dio.get('/content/video/published_videos',queryParameters: {
+    "page":page
+  });
+  return response;
+}
+
+//删除稿件
+Future deleteVideo(String videoInfoid) async {
+  var response = dio.post(
+    '/content/video/delete',
+    data: {
+      "videoInfoId":videoInfoid
+    }
+  );
+  return response;
+}
+
+Future updateVideoInfo(Map form)async{
+  var response = dio.post(
+    '/content/video/update_info',
+    data: form
+  );
+
+  return response;
+}
+
+
+Future getVideoInfoById(String videoInfoId)async{
+  var response = dio.get(
+    '/content/video_info/get_videoInfo_byId',
+    queryParameters: {
+      "videoInfoId":videoInfoId
+    }
+  );
+
   return response;
 }
 

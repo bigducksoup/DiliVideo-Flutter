@@ -1,8 +1,12 @@
 import 'dart:convert';
 
 import 'package:dili_video/publish.dart';
+import 'package:dili_video/setting_page.dart';
 import 'package:dili_video/states/auth_state.dart';
+import 'package:dili_video/user_page.dart';
 import 'package:dili_video/utils/shared_preference.dart';
+import 'package:dili_video/videoItem_manage_page.dart';
+import 'package:dili_video/video_manager.dart';
 import 'package:dili_video/video_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,12 +31,17 @@ void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]) //设置为竖屏
       .then((_) {
     runApp(GetMaterialApp(
+      theme: ThemeData.dark(),
     initialRoute: "/indexPage",
     getPages: [
       GetPage(name: '/indexPage', page: () => const IndexPage()),
       GetPage(name: '/login', page: () => const Login()),
       GetPage(name: '/publish', page: () => const PublishPage()),
-      GetPage(name: '/video', page: ()=>const VideoPage())
+      GetPage(name: '/video', page: ()=>const VideoPage()),
+      GetPage(name: '/video_manager', page: ()=>const VideoManager()),
+      GetPage(name: '/videoItem_manage', page: ()=>const VideoItemManage()),
+      GetPage(name: '/user_info', page: ()=>const UserPage()),
+      GetPage(name: '/setting', page: ()=>const SettingPage())
     ],
   ));
   });
@@ -67,10 +76,10 @@ class _IndexPageState extends State<IndexPage> {
         Map<String, dynamic> authmap = response['data'];
         auth_state.init(authmap);
       } else {
-        Get.toNamed('/login');
+        Get.offAllNamed('/login');
       }
     } else {
-      Get.toNamed('/login');
+      Get.offAllNamed('/login');
     }
   }
 

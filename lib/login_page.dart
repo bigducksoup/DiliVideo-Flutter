@@ -72,7 +72,7 @@ class _LoginState extends State<Login> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    LoadingDialogHelper.showLoading(context);
+                    
                     globalKey.currentState?.login();
                   },
                   style: ElevatedButton.styleFrom(

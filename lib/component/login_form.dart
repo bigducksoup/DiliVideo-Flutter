@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-
 import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/utils/loading_dialog_util.dart';
 import 'package:dili_video/utils/shared_preference.dart';
+import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,7 +39,14 @@ class _LoginFormState extends State<LoginForm> {
   void login() async {
     _formKey.currentState!.save();
 
+    if(!_formKey.currentState!.validate()){
+      TextToast.showToast("表单不合法");
+      return;
+    }
+
     int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    LoadingDialogHelper.showLoading(context);
     var res = await loginbyemail(email, password, timestamp, "127.0.0.1");
     Map<String, dynamic> response = jsonDecode(res.toString());
     if (response['code'] == 200) {
@@ -50,12 +57,12 @@ class _LoginFormState extends State<LoginForm> {
       auth_state.init(authmap);
 
       //保存token
-      
 
       LocalStorge.setValue("token", auth_state.authToken.value);
-      
+
       LoadingDialogHelper.dismissLoading(context);
-      Get.toNamed("/indexPage");
+
+      Get.offAllNamed("/indexPage");
     } else {}
   }
 
@@ -72,8 +79,13 @@ class _LoginFormState extends State<LoginForm> {
               style: const TextStyle(fontSize: 20),
               decoration: getDecoration("账号"),
               onSaved: (newValue) {
-
                 email = newValue!;
+              },
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "账号不能为空";
+                }
+                return null;
               },
             ),
             TextFormField(
@@ -84,6 +96,12 @@ class _LoginFormState extends State<LoginForm> {
               decoration: getDecoration("密码"),
               onSaved: (newValue) {
                 password = newValue!;
+              },
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "密码不能为空";
+                }
+                return null;
               },
             )
           ],

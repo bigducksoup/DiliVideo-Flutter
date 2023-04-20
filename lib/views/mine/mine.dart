@@ -9,6 +9,8 @@ import 'package:dili_video/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import 'package:get/get.dart';
+
 class Mine extends StatefulWidget {
   const Mine({super.key});
 
@@ -23,8 +25,6 @@ class _MineState extends State<Mine> {
   final _numberTextStyle = const TextStyle(
       fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600);
 
-
-
   @override
   void initState() {
     super.initState();
@@ -36,7 +36,6 @@ class _MineState extends State<Mine> {
       color: maindarkcolor,
       height: double.infinity,
       child: SingleChildScrollView(
-        
         child: Container(
           // width: double.infinity,
           // height: MediaQuery.of(context).size.height,
@@ -46,11 +45,11 @@ class _MineState extends State<Mine> {
               //顶部三个按钮
               const TopButton(),
               //个人信息栏
-              UserInfoBox(
-                nickname: auth_state.nickname.value,
-                icon: 0,
-                bicon: 0,
-              ),
+              Obx(() => UserInfoBox(
+                    nickname: "${auth_state.nickname}",
+                    icon: 0,
+                    bicon: 0,
+                  )),
               const SizedBox(
                 height: 10,
               ),
@@ -104,21 +103,28 @@ class _MineState extends State<Mine> {
               ),
               //发布视频按钮
               const PublishButtonBox(),
-              const SizedBox(height: 30,),
+              const SizedBox(
+                height: 30,
+              ),
               const Options(),
-              const SizedBox(height: 25,),
+              const SizedBox(
+                height: 25,
+              ),
               Row(
                 children: const [
-                  SizedBox(width: 15,),
-                  Text("更多服务",style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17
-                  ),),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Text(
+                    "更多服务",
+                    style: TextStyle(color: Colors.white, fontSize: 17),
+                  ),
                 ],
               ),
-              const SizedBox(height: 15,),
+              const SizedBox(
+                height: 15,
+              ),
               const BottomOptions()
-      
             ],
           ),
         ),
