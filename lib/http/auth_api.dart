@@ -1,3 +1,5 @@
+import 'package:get/get_connect/http/src/utils/utils.dart';
+
 import 'dio_manager.dart';
 
 Future loginbyemail(String email, String password, int timestamp, String ip) async {
@@ -17,5 +19,43 @@ Future checklogin() async {
 }
 
 
+Future getBasicUserInfo(id){
+
+   var response = dio.get('/auth/user_info/basic',queryParameters: {
+     "userId":id
+   });
+
+   return response;
+
+}
 
 
+Future follow(String followId){
+
+  var response = dio.post('/auth/relation/follow',data: {
+    "followId":followId
+  });
+
+  return response;
+
+}
+
+Future unfollow(String followId){
+
+  var response = dio.post('/auth/relation/unfollow',data: {
+    "followId":followId
+  });
+
+  return response;
+
+}
+
+Future checkFollow(String followId){
+
+  var response = dio.get('/auth/relation/check_follow',queryParameters: {
+    "followId":followId
+  });
+
+  return response;
+
+}

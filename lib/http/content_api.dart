@@ -102,3 +102,43 @@ Future getVideoInfoById(String videoInfoId)async{
 
 
 
+Future getUserPublishedVideos(String id,int page)async{
+    var response = dio.get(
+    '/content/user_videos/published',
+    queryParameters: {
+      "userId":id,
+      "page":page
+    }
+  );
+
+  return response;
+}
+
+
+Future checkLikeVideo(String videoInfoId){
+
+  var response = dio.get("/content/like/check",queryParameters: {
+    "videoInfoId":videoInfoId
+  });
+
+  return response;
+
+}
+
+
+Future likeVideo(String videoInfoId){
+  var response = dio.post("/content/like/like_video",data: {
+    "videoInfoId":videoInfoId
+  });
+
+  return response;
+}
+
+
+Future unlikeVideo(String videoInfoId){
+  var response = dio.post("/content/like/unlike_video",data: {
+    "videoInfoId":videoInfoId
+  });
+
+  return response;
+}

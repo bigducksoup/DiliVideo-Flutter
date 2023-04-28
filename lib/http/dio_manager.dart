@@ -42,9 +42,9 @@ void initDio(){
     onResponse: ( Response e, handler) {
       var res = jsonDecode(e.toString());
 
-      if(res['code']!=200){
-        get_pack.Get.defaultDialog(title: "ops!",middleText: "请求出错了 o.o!",backgroundColor:Colors.pink.shade300 );
-      }
+      // if(res['code']!=200){
+      //   get_pack.Get.defaultDialog(title: "ops!",middleText: "请求出错了 o.o!",backgroundColor:Colors.pink.shade300 );
+      // }
 
       return handler.next(e);
     },

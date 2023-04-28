@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/theme/colors.dart';
+import 'package:dili_video/services/router.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -61,16 +62,21 @@ class Comment extends StatelessWidget {
                 width: 60,
                 height: 60,
                 child: Center(
-                  child: Container(
-                      height: 30,
-                      width: 30,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50)),
-                      clipBehavior: Clip.hardEdge,
-                      child: Image.network(
-                        avatarUrl,
-                        fit: BoxFit.cover,
-                      )),
+                  child: GestureDetector(
+                    onTap: () {
+                      routeToUserPage(userId);
+                    },
+                    child: Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50)),
+                        clipBehavior: Clip.hardEdge,
+                        child: Image.network(
+                          avatarUrl,
+                          fit: BoxFit.cover,
+                        )),
+                  ),
                 ),
               ),
               Column(
@@ -78,9 +84,14 @@ class Comment extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Text(
-                    userName,
-                    style: textStyle,
+                  GestureDetector(
+                    onTap: () {
+                      routeToUserPage(userId);
+                    },
+                    child: Text(
+                      userName,
+                      style: textStyle,
+                    ),
                   ),
                   Text(
                     date,
@@ -202,6 +213,13 @@ class CommentChildren extends StatelessWidget {
 
   final List children;
 
+  // {
+  //                   "id": "edf37ef7-79e6-4643-a6f3-59db71dd8b85",
+  //                   "userId": "2",
+  //                   "nickName": "鸭粥粥",
+  //                   "content": "整的挺好·"
+  //               }
+
   final String userId;
 
   final String fatherCommentId;
@@ -237,8 +255,11 @@ class CommentChildren extends StatelessWidget {
                   text: TextSpan(children: [
                 TextSpan(
                     text: children[i]['nickName'],
-                    style:
-                        TextStyle(color: Colors.blue.shade300, fontSize: 16)),
+                    style:TextStyle(color: Colors.blue.shade300, fontSize: 16),
+                    recognizer: TapGestureRecognizer()..onTap = (){
+                      routeToUserPage(children[i]['userId']);
+                    }
+                    ),
                 TextSpan(
                     text: " : ${children[i]['content']} ",
                     style: const TextStyle(color: Colors.white, fontSize: 16)),

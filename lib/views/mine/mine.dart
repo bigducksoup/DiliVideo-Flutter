@@ -1,4 +1,4 @@
-import 'package:dili_video/assets/assets.dart';
+
 import 'package:dili_video/views/mine/component/bottom_options.dart';
 import 'package:dili_video/views/mine/component/options.dart';
 import 'package:dili_video/views/mine/component/publish_button_box.dart';

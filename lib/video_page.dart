@@ -4,6 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/component/video_page/comment_tabview.dart';
 import 'package:dili_video/danmu_player/barrage_controller.dart';
 import 'package:dili_video/danmu_player/send_barrage.dart';
+import 'package:dili_video/http/auth_api.dart';
+import 'package:dili_video/services/router.dart';
+import 'package:dili_video/services/userOperation.dart';
+import 'package:dili_video/video_fulllscreen_page.dart';
 import 'danmu_player/barrage.dart';
 import 'package:dili_video/http/content_api.dart';
 import 'package:dili_video/theme/colors.dart';
@@ -66,12 +70,12 @@ class _VideoPageState extends State<VideoPage>
           ),
           body: Container(
             color: maindarkcolor,
-            width: double.infinity,
-            height: double.infinity,
+            width:MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
             child: Column(children: [
               MyVideoPlayer(
                 width: width,
-                height: width*9/16,
+                height: width * 9 / 16,
                 item: item,
               ),
               Row(
@@ -101,7 +105,9 @@ class _VideoPageState extends State<VideoPage>
                     item: item,
                   ),
                 ),
-                  CommentView(videoInfoId: item['videoInfoId'],)
+                CommentView(
+                  videoInfoId: item['videoInfoId'],
+                )
               ]))
             ]),
           )),
@@ -110,7 +116,8 @@ class _VideoPageState extends State<VideoPage>
 }
 
 class MyVideoPlayer extends StatefulWidget {
-  const MyVideoPlayer({super.key, this.item, required this.width, required this.height});
+  const MyVideoPlayer(
+      {super.key, this.item, required this.width, required this.height});
 
   final item;
   final double width;
@@ -129,14 +136,14 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   Map<String, dynamic> videoPlayState = {"playing": true, "progress": 0.0};
 
-  var barrageController = Get.put<BarrageController>(BarrageController(channelCount: 5));
+  var barrageController =
+      Get.put<BarrageController>(BarrageController(channelCount: 5));
 
   @override
   void initState() {
     super.initState();
     itemcopy = widget.item;
     getVideoPlayUrl();
-    
   }
 
   @override
@@ -312,9 +319,14 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                                         _videoController!.seekTo(d);
                                       });
                                     })),
-                            const FaIcon(
-                              FontAwesomeIcons.maximize,
-                              color: Colors.pink,
+                            GestureDetector(
+                              onTap: () {
+                                Get.to(VideoFullScreenPage(videoPlayerController: _videoController,tag: widget.item['videoInfoId'],),transition: Transition.fadeIn);
+                              },
+                              child: const FaIcon(
+                                FontAwesomeIcons.maximize,
+                                color: Colors.pink,
+                              ),
                             )
                           ],
                         ),
@@ -340,7 +352,7 @@ class VideoInfoView extends StatefulWidget {
   State<VideoInfoView> createState() => _VideoInfoViewState();
 }
 
-class _VideoInfoViewState extends State<VideoInfoView> {
+class _VideoInfoViewState extends State<VideoInfoView> with AutomaticKeepAliveClientMixin{
   Map<String, dynamic> _videoUserInfo = {
     "id": "1",
     "nickname": "loading..",
@@ -356,106 +368,222 @@ class _VideoInfoViewState extends State<VideoInfoView> {
     "gender": 1
   };
 
+  Future getUserInfo() async {
+    print(1212);
+    var response = await getVideoAuthorInfo(widget.item['videoAuthorId']);
+    var res = jsonDecode(response.toString());
+
+      _videoUserInfo = res['data'];
+
+
+    return res['data'];
+  }
+
   @override
   void initState() {
     super.initState();
-    getVideoAuthorInfo(widget.item['videoAuthorId']).then((value) {
-      var responseResult = jsonDecode(value.toString());
-      if (mounted) {
-        setState(() {
-          _videoUserInfo = responseResult['data'];
-        });
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        UserInfoRow(
-          videoUserInfo: _videoUserInfo,
-        ),
-        VideoTitleAndInfo(
-          videoInfo: widget.item,
-        )
-      ],
+    return FutureBuilder(
+      future: getUserInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Column(
+            children: [
+              UserInfoRow(
+                videoUserInfo: snapshot.data,
+              ),
+              VideoTitleAndInfo(
+                videoInfo: widget.item,
+              )
+            ],
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
+  
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
-class UserInfoRow extends StatelessWidget {
+class UserInfoRow extends StatefulWidget {
   const UserInfoRow({super.key, this.videoUserInfo});
-
   final videoUserInfo;
+
+  @override
+  State<UserInfoRow> createState() => _UserInfoRowState();
+}
+
+class _UserInfoRowState extends State<UserInfoRow> {
+  bool ifFollow = false;
+
+  void checkIfFollow(id) async {
+    var response = await checkFollow(id);
+    var res = jsonDecode(response.toString());
+    setState(() {
+      ifFollow = res['data'];
+    });
+  }
+
+  @override
+  void initState() {
+    checkIfFollow(widget.videoUserInfo['id']);
+    print(widget.videoUserInfo);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 18, 10, 18),
-      child: Container(
-        height: 50,
-        width: double.infinity,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(50)),
-              clipBehavior: Clip.hardEdge,
-              width: 40,
-              height: 40,
-              child: Image.network(
-                videoUserInfo['avatarUrl'],
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(child: Text("ops!"));
-                },
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(videoUserInfo['nickname'],
-                    style: TextStyle(
-                        color: Colors.pink.shade400,
-                        fontWeight: FontWeight.w600)),
-                Text(
-                  "${videoUserInfo['followerCount']}粉丝",
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w300),
+      child: GestureDetector(
+        onTap: () {
+          routeToUserPage(widget.videoUserInfo['id']);
+        },
+        child: Container(
+          height: 50,
+          width: double.infinity,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(50)),
+                clipBehavior: Clip.hardEdge,
+                width: 40,
+                height: 40,
+                child: Image.network(
+                  widget.videoUserInfo['avatarUrl'],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(child: Text("ops!"));
+                  },
                 ),
-              ],
-            ),
-            const Expanded(child: SizedBox()),
-            SizedBox(
-                width: 80,
-                height: 30,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text("关注"),
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStatePropertyAll(Colors.pink.shade300)),
-                )),
-            const SizedBox(
-              width: 10,
-            )
-          ],
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      routeToUserPage(widget.videoUserInfo['id']);
+                    },
+                    child: Text(widget.videoUserInfo['nickname'],
+                        style: TextStyle(
+                            color: Colors.pink.shade400,
+                            fontWeight: FontWeight.w600)),
+                  ),
+                  Text(
+                    "${widget.videoUserInfo['followerCount']}粉丝",
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w300),
+                  ),
+                ],
+              ),
+              const Expanded(child: SizedBox()),
+              SizedBox(
+                  width: 80,
+                  height: 30,
+                  child: ifFollow
+                      ? ElevatedButton(
+                          onPressed: () async {
+                            var ifSuccess =
+                                await unfollowUp(widget.videoUserInfo['id']);
+                            setState(() {
+                              ifFollow = !ifSuccess;
+                            });
+                          },
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll(
+                                  Colors.grey.shade300)),
+                          child: const Text(
+                            "取消关注",
+                            style: TextStyle(fontSize: 10, color: Colors.black),
+                          ),
+                        )
+                      : ElevatedButton(
+                          onPressed: () async {
+                            var ifSuccess =
+                                await followUp(widget.videoUserInfo['id']);
+                            setState(() {
+                              ifFollow = ifSuccess;
+                            });
+                          },
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll(
+                                  Colors.pink.shade300)),
+                          child: const Text("关注"),
+                        )),
+              const SizedBox(
+                width: 10,
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class VideoTitleAndInfo extends StatelessWidget {
+class VideoTitleAndInfo extends StatefulWidget {
   const VideoTitleAndInfo({super.key, this.videoInfo});
+
   final videoInfo;
+  // {
+  //           "videoInfoId": "a8acba5e-c21f-43cf-af0f-ce86f537f8f6",
+  //           "videoAuthorId": "1",
+  //           "collectCount": 0,
+  //           "commentCount": 0,
+  //           "createTime": "2023-03-09T03:16:26.000+00:00",
+  //           "isOriginal": 0,
+  //           "watchCount": 0,
+  //           "likeCount": 0,
+  //           "isPublish": 1,
+  //           "openComment": 1,
+  //           "title": "code",
+  //           "summary": "code",
+  //           "videoFileId": "8fadbbc7-48af-421a-a667-cb50ee750caa",
+  //           "videoFileUrl": "null",
+  //           "videoFileName": "null",
+  //           "coverId": "4fe6fd99-1243-4eb0-b31f-210e40eb1633",
+  //           "coverName": "f71fa4ff-a93d-4bb3-a7e1-e6fb58448d5a.jpg",
+  //           "coverUrl": "http://127.0.0.1:9000/img/cf/c6/f71fa4ff-a93d-4bb3-a7e1-e6fb58448d5a.jpg"
+  //       }
+
+  @override
+  State<VideoTitleAndInfo> createState() => _VideoTitleAndInfoState();
+}
+
+class _VideoTitleAndInfoState extends State<VideoTitleAndInfo> {
+  bool iflike = false;
+
+  void checklike() async {
+    var response = await checkLikeVideo(widget.videoInfo['videoInfoId']);
+    var res = jsonDecode(response.toString());
+
+    setState(() {
+      iflike = res['data'];
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checklike();
+  }
 
   List<Widget> buildIcons() {
     List<Widget> icons = [];
@@ -465,15 +593,39 @@ class VideoTitleAndInfo extends StatelessWidget {
         TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: color);
     icons.add(Column(
       children: [
-        Icon(
-          Icons.thumb_up_alt_outlined,
-          size: size,
-          color: color,
-        ),
+        iflike
+            ? GestureDetector(
+                onTap: () {
+                  unlikeVideo(widget.videoInfo['videoInfoId']);
+                  setState(() {
+                    iflike = false;
+                    widget.videoInfo['likeCount']--;
+                  });
+                },
+                child: Icon(
+                  Icons.thumb_up,
+                  size: size,
+                  color: Colors.pink.shade300,
+                ),
+              )
+            : GestureDetector(
+                onTap: () {
+                  likeVideo(widget.videoInfo['videoInfoId']);
+                  setState(() {
+                    iflike = true;
+                    widget.videoInfo['likeCount']++;
+                  });
+                },
+                child: Icon(
+                  Icons.thumb_up_alt_outlined,
+                  size: size,
+                  color: color,
+                ),
+              ),
         const SizedBox(
           height: 5,
         ),
-        Text("点赞", style: textStyle)
+        Text("${widget.videoInfo['likeCount']}", style: textStyle)
       ],
     ));
     icons.add(Column(
@@ -542,7 +694,7 @@ class VideoTitleAndInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            videoInfo['title'],
+            widget.videoInfo['title'],
             style: const TextStyle(color: Colors.white, fontSize: 20),
           ),
           const SizedBox(
@@ -557,7 +709,7 @@ class VideoTitleAndInfo extends StatelessWidget {
                 weight: 10,
               ),
               Text(
-                "${videoInfo['watchCount']}",
+                "${widget.videoInfo['watchCount']}",
                 style: const TextStyle(color: Colors.white30),
               ),
               const SizedBox(
@@ -572,14 +724,14 @@ class VideoTitleAndInfo extends StatelessWidget {
                 width: 5,
               ),
               Text(
-                "${videoInfo['commentCount']}",
+                "${widget.videoInfo['commentCount']}",
                 style: const TextStyle(color: Colors.white30),
               ),
               const SizedBox(
                 width: 10,
               ),
               Text(
-                (videoInfo['createTime'] as String).substring(0, 16),
+                (widget.videoInfo['createTime'] as String).substring(0, 16),
                 style: const TextStyle(color: Colors.white30),
               )
             ],
@@ -587,7 +739,7 @@ class VideoTitleAndInfo extends StatelessWidget {
           const SizedBox(
             height: 5,
           ),
-          Text("${videoInfo['summary']}",
+          Text("${widget.videoInfo['summary']}",
               style: const TextStyle(color: Colors.white30)),
           const SizedBox(
             height: 20,

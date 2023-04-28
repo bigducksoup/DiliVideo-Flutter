@@ -6,6 +6,7 @@ import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/user_page.dart';
 import 'package:dili_video/utils/shared_preference.dart';
 import 'package:dili_video/videoItem_manage_page.dart';
+import 'package:dili_video/video_fulllscreen_page.dart';
 import 'package:dili_video/video_manager.dart';
 import 'package:dili_video/video_page.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ void main() {
       GetPage(name: '/video_manager', page: ()=>const VideoManager()),
       GetPage(name: '/videoItem_manage', page: ()=>const VideoItemManage()),
       GetPage(name: '/user_info', page: ()=>const UserPage()),
-      GetPage(name: '/setting', page: ()=>const SettingPage())
+      GetPage(name: '/setting', page: ()=>const SettingPage()),
     ],
   ));
   });

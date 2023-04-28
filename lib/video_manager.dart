@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/theme/colors.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
