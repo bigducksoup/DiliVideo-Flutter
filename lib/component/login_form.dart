@@ -22,8 +22,8 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
 
-  String email = '969690525@qq.com';
-  String password = 'Yjh969690525';
+  String email = '';
+  String password = '';
 
   InputDecoration getDecoration(String content) {
     return InputDecoration(
