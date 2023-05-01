@@ -6,6 +6,7 @@ import 'package:dili_video/utils/loading_dialog_util.dart';
 
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 
 class Login extends StatefulWidget {
@@ -62,7 +63,9 @@ class _LoginState extends State<Login> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.toNamed('/register');
+                  },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(170, 45),
                     maximumSize: const Size(double.infinity, 50),

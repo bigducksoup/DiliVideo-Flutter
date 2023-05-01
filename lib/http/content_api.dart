@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 
 import 'dio_manager.dart';
@@ -140,5 +142,11 @@ Future unlikeVideo(String videoInfoId){
     "videoInfoId":videoInfoId
   });
 
+  return response;
+}
+
+
+Future getVideoVosByIds(List<String> ids){
+  var response = dio.get("/content/video_info/get_videoInfo_byIdList",data: jsonEncode(ids));
   return response;
 }

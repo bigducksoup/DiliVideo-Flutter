@@ -96,6 +96,7 @@ class _UserInfoBoxState extends State<UserInfoBox> {
                     Icon(
                       Icons.edit_outlined,
                       color: textwhitecolor,
+                      size: 14,
                     )
                   ],
                 ),

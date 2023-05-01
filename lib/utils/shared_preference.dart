@@ -5,9 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorge{
 
-
-
-
   static getValue(String key,type)async{
 
     SharedPreferences localstorge = await SharedPreferences.getInstance();
@@ -40,6 +37,7 @@ class LocalStorge{
 
     type = type.toString().toLowerCase();
 
+
     
     switch(type){
       case 'bool':
@@ -56,6 +54,39 @@ class LocalStorge{
 
     }
 
+  }
+
+
+  static setStringList(String key,List<String> value)async{
+     SharedPreferences localstorge = await SharedPreferences.getInstance();
+     localstorge.setStringList(key, value);
+  }
+
+  static Future<List<String>?> getStringList(String key)async{
+    SharedPreferences localstorge = await SharedPreferences.getInstance();
+    List<String>? value = localstorge.getStringList(key);
+    return value;
+  }
+
+  static addToStringList(String key,String value)async{
+    SharedPreferences localstorge = await SharedPreferences.getInstance();
+    List<String>? stringList = localstorge.getStringList(key);
+    if(stringList==null){
+      List<String> list = [];
+      list.add(value);
+      await setStringList(key, list);
+    }else{
+      if(stringList.contains(value)){
+        return;
+      }
+      stringList.add(value);
+      await setStringList(key, stringList);
+    }
+  }
+
+  static clearStringList(String key)async{
+    SharedPreferences localstorge = await SharedPreferences.getInstance();
+    localstorge.setStringList(key, []);
   }
 
 

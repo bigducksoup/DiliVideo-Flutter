@@ -7,7 +7,10 @@ import 'package:dili_video/danmu_player/send_barrage.dart';
 import 'package:dili_video/http/auth_api.dart';
 import 'package:dili_video/services/router.dart';
 import 'package:dili_video/services/userOperation.dart';
+import 'package:dili_video/states/auth_state.dart';
+import 'package:dili_video/utils/shared_preference.dart';
 import 'package:dili_video/video_fulllscreen_page.dart';
+import 'package:flutter/services.dart';
 import 'danmu_player/barrage.dart';
 import 'package:dili_video/http/content_api.dart';
 import 'package:dili_video/theme/colors.dart';
@@ -54,8 +57,13 @@ class _VideoPageState extends State<VideoPage>
   void initState() {
     item = Get.arguments;
     _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
+        SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+    LocalStorge.addToStringList("videoHistory" + auth_state.id.value, item['videoInfoId']);
 
     super.initState();
+
   }
 
   @override
@@ -75,28 +83,31 @@ class _VideoPageState extends State<VideoPage>
             child: Column(children: [
               MyVideoPlayer(
                 width: width,
-                height: width * 9 / 16,
+                height: MediaQuery.of(context).size.height > MediaQuery.of(context).size.width ? width * 9 / 16 : MediaQuery.of(context).size.height,
                 item: item,
               ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 0.5 * width,
-                    child: TabBar(
-                        indicatorSize: TabBarIndicatorSize.label,
-                        labelColor: Colors.pink.shade400,
-                        indicatorColor: Colors.pink.shade300,
-                        unselectedLabelColor: Colors.white,
-                        controller: _tabController,
-                        tabs: const [
-                          Tab(
-                            text: '简介',
-                          ),
-                          Tab(text: "评论")
-                        ]),
-                  ),
-                  SendBarrage(width: width, videoInfoId: item['videoInfoId'])
-                ],
+              Visibility(
+                visible:  MediaQuery.of(context).size.height> MediaQuery.of(context).size.width? true:false,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 0.5 * width,
+                      child: TabBar(
+                          indicatorSize: TabBarIndicatorSize.label,
+                          labelColor: Colors.pink.shade400,
+                          indicatorColor: Colors.pink.shade300,
+                          unselectedLabelColor: Colors.white,
+                          controller: _tabController,
+                          tabs: const [
+                            Tab(
+                              text: '简介',
+                            ),
+                            Tab(text: "评论")
+                          ]),
+                    ),
+                    SendBarrage(width: width, videoInfoId: item['videoInfoId'])
+                  ],
+                ),
               ),
               Expanded(
                   child: TabBarView(controller: _tabController, children: [
@@ -206,12 +217,12 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     var width = MediaQuery.of(context).size.width;
     return SizedBox(
       width: width,
-      height: width * 9 / 16,
+      height: widget.height,
       child: Stack(
         children: [
           SizedBox(
             width: width,
-            height: width * 9 / 16,
+            height:widget.height,
             child: Hero(
               tag: widget.item['videoInfoId'],
               child: buildPlayerWindow(),
@@ -237,7 +248,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
               child: Container(
                 color: Colors.transparent,
                 width: width,
-                height: width * 9 / 16,
+                height: widget.height,
                 child: Visibility(
                   visible: _videoControllFrame,
                   child: Column(
@@ -353,60 +364,53 @@ class VideoInfoView extends StatefulWidget {
 }
 
 class _VideoInfoViewState extends State<VideoInfoView> with AutomaticKeepAliveClientMixin{
-  Map<String, dynamic> _videoUserInfo = {
-    "id": "1",
-    "nickname": "loading..",
-    "avatarUrl": "http://127.0.0.1:9000/img/wallhaven-m3pex1.png",
-    "summary": "none",
-    "followerCount": 0,
-    "followedCount": 0,
-    "publishCount": 0,
-    "isBaned": 0,
-    "level": 0,
-    "exp": 0,
-    "birthday": "2023-03-03T16:00:00.000+00:00",
-    "gender": 1
-  };
+     Map<String, dynamic> _videoUserInfo = {};
+
+  // {
+  //   "id": "1",
+  //   "nickname": "loading..",
+  //   "avatarUrl": "http://127.0.0.1:9000/img/wallhaven-m3pex1.png",
+  //   "summary": "none",
+  //   "followerCount": 0,
+  //   "followedCount": 0,
+  //   "publishCount": 0,
+  //   "isBaned": 0,
+  //   "level": 0,
+  //   "exp": 0,
+  //   "birthday": "2023-03-03T16:00:00.000+00:00",
+  //   "gender": 1
+  // };
 
   Future getUserInfo() async {
-    print(1212);
     var response = await getVideoAuthorInfo(widget.item['videoAuthorId']);
     var res = jsonDecode(response.toString());
 
-      _videoUserInfo = res['data'];
+     setState(() {
+        _videoUserInfo = res['data'];
+     });
 
-
+  
     return res['data'];
   }
 
   @override
   void initState() {
+    getUserInfo();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getUserInfo(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Column(
+    return _videoUserInfo.isEmpty? const Center(child: CircularProgressIndicator()):Column(
             children: [
               UserInfoRow(
-                videoUserInfo: snapshot.data,
+                videoUserInfo: _videoUserInfo,
               ),
               VideoTitleAndInfo(
                 videoInfo: widget.item,
               )
             ],
           );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
   }
   
   @override
@@ -425,6 +429,7 @@ class UserInfoRow extends StatefulWidget {
 class _UserInfoRowState extends State<UserInfoRow> {
   bool ifFollow = false;
 
+
   void checkIfFollow(id) async {
     var response = await checkFollow(id);
     var res = jsonDecode(response.toString());
@@ -436,7 +441,6 @@ class _UserInfoRowState extends State<UserInfoRow> {
   @override
   void initState() {
     checkIfFollow(widget.videoUserInfo['id']);
-    print(widget.videoUserInfo);
 
     super.initState();
   }

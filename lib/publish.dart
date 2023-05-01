@@ -76,6 +76,17 @@ class _VideoFormState extends State<VideoForm> {
     super.initState();
     getPart();
     pickVideo();
+    
+  }
+
+
+
+  @override
+  void dispose() {
+    video?.delete();
+    cover?.delete();
+    _videoController?.dispose();
+    super.dispose();
   }
 
   Future<void> pickVideo() async {
@@ -234,11 +245,7 @@ class _VideoFormState extends State<VideoForm> {
   
   }
 
-  @override
-  void dispose() {
-    _videoController?.dispose();
-    super.dispose();
-  }
+
 
   videoPlayerBuilder() {
     if (_videoController != null && _videoController!.value.isInitialized) {

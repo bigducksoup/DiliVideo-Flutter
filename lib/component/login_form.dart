@@ -46,7 +46,8 @@ class _LoginFormState extends State<LoginForm> {
 
     int timestamp = DateTime.now().millisecondsSinceEpoch;
 
-    LoadingDialogHelper.showLoading(context);
+    Get.dialog(Center(child: CircularProgressIndicator(),));
+
     var res = await loginbyemail(email, password, timestamp, "127.0.0.1");
     Map<String, dynamic> response = jsonDecode(res.toString());
     if (response['code'] == 200) {
@@ -59,11 +60,14 @@ class _LoginFormState extends State<LoginForm> {
       //保存token
 
       LocalStorge.setValue("token", auth_state.authToken.value);
-
-      LoadingDialogHelper.dismissLoading(context);
-
       Get.offAllNamed("/indexPage");
-    } else {}
+    } else {
+      Get.back();
+      TextToast.showToast(response['msg']);
+      
+    }
+
+
   }
 
   @override

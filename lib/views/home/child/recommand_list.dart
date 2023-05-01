@@ -41,8 +41,9 @@ class _RecommandListState extends State<RecommandList> with AutomaticKeepAliveCl
     isLoading = true;
     var response = await getLatestRecommend(page);
     var responseresult = jsonDecode(response.toString());
-    List data = responseresult['data'];
-    if(data.isEmpty){
+    List data = responseresult['data'] ?? [] ;
+
+    if( data.isEmpty ){
       isLoading = false;
       return;
     }
@@ -166,7 +167,7 @@ class VideoItem extends StatelessWidget {
             color: maindarkcolor,
           ),
           width: width,
-          height: width * 1.1,
+          height: width * 1.15,
           child: Column(
             // mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
