@@ -1,13 +1,15 @@
 import 'dart:convert';
 
 import 'package:dili_video/http/auth_api.dart';
+import 'package:dili_video/pages/user_page/post_tab_view.dart';
 import 'package:dili_video/services/userOperation.dart';
+import 'package:dili_video/theme/colors.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:dili_video/video_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'http/content_api.dart';
+import '../../http/content_api.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -81,102 +83,130 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
     setUserInfo(res['data']);
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-              expandedHeight: 100,
-              floating: false,
-              pinned: true,
-              snap: false,
-              flexibleSpace: FlexibleSpaceBar(
-                  background: Image.network(
-                      "https://i0.hdslb.com/bfs/archive/a349e5844a068d9767d699ab4fdbaa16030af585.png",
-                      fit: BoxFit.scaleDown))),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        image: avatarUrl == ""
-                            ? null
-                            : DecorationImage(
-                                image: NetworkImage(avatarUrl),
-                                fit: BoxFit.cover)),
-                  ),
-                  CountInfo(
-                      followCount: followCount,
-                      fansCount: fansCount,
-                      userId: _userId)
-                ],
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                      width: 100,
-                      child: Center(
-                          child: Text(
-                        nickName,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600),
-                      ))),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(summary),
-                ],
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              decoration: const BoxDecoration(
-                  border: Border(
-                      top: BorderSide(width: 0.3, color: Colors.white54))),
-              height: 50,
-              child: TabBar(
-                tabs: const [Text("主页"), Text("动态"), Text("投稿")],
-                controller: tabController,
-                indicatorSize: TabBarIndicatorSize.label,
-                indicatorColor: Colors.pink.shade300,
-                labelColor: Colors.pink.shade300,
-                unselectedLabelColor: Colors.white,
-              ),
-            ),
-          ),
-          SliverFillRemaining(
-            child: TabBarView(
+      body: NestedScrollView(headerSliverBuilder:(context, innerBoxIsScrolled) {
+        return [
+          _buildSliverAppBar()
+        ];
+      }, body: TabBarView(
               controller: tabController,
               children: [
                 Index(),
-                Trends(),
+                Post(),
                 Works(
                   userId: _userId,
                 )
               ],
-            ),
-          )
-        ],
-      ),
+            ),),
     );
   }
+
+
+
+
+
+  Widget _buildSliverAppBar(){
+    return SliverAppBar(
+            toolbarHeight: 50,
+            expandedHeight: 280,
+            floating: true,
+            pinned: true,
+            snap: false,
+            flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.pin,
+                background: Column(
+                  children: [
+                    Image.network(
+                        "https://i0.hdslb.com/bfs/archive/a349e5844a068d9767d699ab4fdbaa16030af585.png",
+                        fit: BoxFit.scaleDown),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                image: avatarUrl == ""
+                                    ? null
+                                    : DecorationImage(
+                                        image: NetworkImage(avatarUrl),
+                                        fit: BoxFit.cover)),
+                          ),
+                          CountInfo(
+                              followCount: followCount,
+                              fansCount: fansCount,
+                              userId: _userId)
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                                width: 100,
+                                child: Center(
+                                    child: Text(
+                                  nickName,
+                                  style: const TextStyle(
+                                      fontSize: 18, fontWeight: FontWeight.w600),
+                                ))),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(summary),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                )),
+            bottom: PreferredSize(
+              preferredSize: const Size(double.infinity, 50),
+              child: _buildTabbar()
+            ),
+          );
+  }
+
+
+
+
+  Widget _buildTabbar(){
+    return Container(
+                padding: const EdgeInsets.fromLTRB(5, 12, 5, 12),
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  border: Border(top: BorderSide(width: 0.3,color: Colors.grey))
+                ),
+                child: TabBar(
+                  tabs: const [Text("主页"), Text("动态"), Text("投稿")],
+                  controller: tabController,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  indicatorColor: Colors.pink.shade300,
+                  labelColor: Colors.pink.shade300,
+                  unselectedLabelColor: Colors.white,
+                ),
+              );
+  }
+
+
+
 }
+
+
+
+
 
 class CountInfo extends StatefulWidget {
   const CountInfo(
@@ -198,7 +228,7 @@ class CountInfo extends StatefulWidget {
 class _CountInfoState extends State<CountInfo> {
   bool ifFollow = false;
 
-    void checkIfFollow(id) async {
+  void checkIfFollow(id) async {
     var response = await checkFollow(id);
     var res = jsonDecode(response.toString());
 
@@ -206,9 +236,9 @@ class _CountInfoState extends State<CountInfo> {
       ifFollow = res['data'];
     });
   }
+
   @override
   void initState() {
-
     checkIfFollow(widget.userId);
     super.initState();
   }
@@ -352,16 +382,3 @@ class _WorksState extends State<Works> with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
 }
 
-class Trends extends StatefulWidget {
-  const Trends({super.key});
-
-  @override
-  State<Trends> createState() => _TrendsState();
-}
-
-class _TrendsState extends State<Trends> {
-  @override
-  Widget build(BuildContext context) {
-    return FlutterLogo();
-  }
-}

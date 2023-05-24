@@ -4,7 +4,7 @@ import 'package:dili_video/publish.dart';
 import 'package:dili_video/register.dart';
 import 'package:dili_video/setting_page.dart';
 import 'package:dili_video/states/auth_state.dart';
-import 'package:dili_video/user_page.dart';
+import 'package:dili_video/pages/user_page/user_page.dart';
 import 'package:dili_video/utils/shared_preference.dart';
 import 'package:dili_video/videoItem_manage_page.dart';
 import 'package:dili_video/video_fulllscreen_page.dart';
