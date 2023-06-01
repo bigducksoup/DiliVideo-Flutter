@@ -4,7 +4,7 @@ import 'package:dili_video/theme/colors.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'http/content_api.dart';
+import '../../http/content_api.dart';
 
 class VideoItemManage extends StatefulWidget {
   const VideoItemManage({super.key});
@@ -339,7 +339,7 @@ class _VideoItemManageState extends State<VideoItemManage> {
                       child: ElevatedButton(
                         onPressed: () {
                           _form['title'] = titleController.text;
-                          _form['description']  =summaryController.text;
+                          _form['description'] = summaryController.text;
                           update();
                         },
                         style: ButtonStyle(

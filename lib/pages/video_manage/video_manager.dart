@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-import 'http/content_api.dart';
+import '../../http/content_api.dart';
 
 class VideoManager extends StatefulWidget {
   const VideoManager({super.key});
@@ -51,13 +51,14 @@ class _VideoManagerState extends State<VideoManager> {
         itemBuilder: (context, index) {
           var item = _videoList[index];
           return GestureDetector(
-            onTap: () async{
-             var res =  await Get.toNamed("/videoItem_manage",arguments: item);
-             if(res!=null){
-               setState(() {
-                 _videoList.removeWhere((element) => element['videoInfoId'] == res['videoInfoId']);
-               });
-             }
+            onTap: () async {
+              var res = await Get.toNamed("/videoItem_manage", arguments: item);
+              if (res != null) {
+                setState(() {
+                  _videoList.removeWhere((element) =>
+                      element['videoInfoId'] == res['videoInfoId']);
+                });
+              }
             },
             child: VideoItem(
               coverUrl: item['coverUrl'],
@@ -129,7 +130,11 @@ class VideoItem extends StatelessWidget {
                 const Expanded(child: SizedBox()),
                 Row(
                   children: [
-                     Icon(Icons.person,color: Colors.pink.shade300,size: 15,),
+                    Icon(
+                      Icons.person,
+                      color: Colors.pink.shade300,
+                      size: 15,
+                    ),
                     Text(
                       videoAuthorName,
                       softWrap: true,
@@ -139,7 +144,11 @@ class VideoItem extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                     Icon(Icons.tv_rounded,color: Colors.pink.shade300,size: 15,),
+                    Icon(
+                      Icons.tv_rounded,
+                      color: Colors.pink.shade300,
+                      size: 15,
+                    ),
                     Text(
                       "$watchCount",
                       style: const TextStyle(color: Colors.white),

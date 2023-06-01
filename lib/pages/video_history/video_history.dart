@@ -5,7 +5,7 @@ import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/theme/colors.dart';
 import 'package:dili_video/utils/shared_preference.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
-import 'package:dili_video/video_manager.dart';
+import 'package:dili_video/pages/video_manage/video_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,8 +26,9 @@ class _VideoHistoryPageState extends State<VideoHistoryPage> {
 
   void addScrollToBottomListener() {
     _listviewScrollController.addListener(() {
-      if (_listviewScrollController.position.pixels == _listviewScrollController.position.maxScrollExtent) {
-          getData();
+      if (_listviewScrollController.position.pixels ==
+          _listviewScrollController.position.maxScrollExtent) {
+        getData();
       }
     });
   }
@@ -68,13 +69,13 @@ class _VideoHistoryPageState extends State<VideoHistoryPage> {
     page++;
   }
 
-
-  void deleteHistory(){
+  void deleteHistory() {
     LocalStorge.remove("videoHistory" + auth_state.id.value);
     setState(() {
-      data  = [];
+      data = [];
     });
   }
+
   @override
   void initState() {
     super.initState();
@@ -89,7 +90,7 @@ class _VideoHistoryPageState extends State<VideoHistoryPage> {
         appBar: AppBar(
           backgroundColor: maindarkcolor,
           title: const Text("历史记录"),
-          actions:  [
+          actions: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: InkWell(

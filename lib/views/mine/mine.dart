@@ -32,100 +32,102 @@ class _MineState extends State<Mine> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: maindarkcolor,
-      height: double.infinity,
-      child: SingleChildScrollView(
-        child: Container(
-          // width: double.infinity,
-          // height: MediaQuery.of(context).size.height,
-          color: maindarkcolor,
-          child: Column(
-            children: [
-              //顶部三个按钮
-              const TopButton(),
-              //个人信息栏
-              Obx(() => UserInfoBox(
-                    nickname: "${auth_state.nickname}",
-                    icon: 0,
-                    bicon: 0,
-                  )),
-              const SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 80,
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "${auth_state.publishCount}",
-                            style: _numberTextStyle,
-                          ),
-                          Text(
-                            "动态",
-                            style: TextStyle(color: textwhitecolor),
-                          )
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "${auth_state.followedCount}",
-                            style: _numberTextStyle,
-                          ),
-                          Text(
-                            "关注",
-                            style: TextStyle(color: textwhitecolor),
-                          )
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "${auth_state.followerCount}",
-                            style: _numberTextStyle,
-                          ),
-                          Text(
-                            "粉丝",
-                            style: TextStyle(color: textwhitecolor),
-                          )
-                        ],
-                      )
-                    ]),
-              ),
-              //发布视频按钮
-              const PublishButtonBox(),
-              const SizedBox(
-                height: 30,
-              ),
-              const Options(),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: const [
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Text(
-                    "更多服务",
-                    style: TextStyle(color: Colors.white, fontSize: 17),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              const BottomOptions()
-            ],
+    return Scaffold(
+      body: Container(
+        color: maindarkcolor,
+        height: double.infinity,
+        child: SingleChildScrollView(
+          child: Container(
+            // width: double.infinity,
+            // height: MediaQuery.of(context).size.height,
+            color: maindarkcolor,
+            child: Column(
+              children: [
+                //顶部三个按钮
+                const TopButton(),
+                //个人信息栏
+                Obx(() => UserInfoBox(
+                      nickname: "${auth_state.nickname}",
+                      icon: 0,
+                      bicon: 0,
+                    )),
+                const SizedBox(
+                  height: 10,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 80,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${auth_state.publishCount}",
+                              style: _numberTextStyle,
+                            ),
+                            Text(
+                              "动态",
+                              style: TextStyle(color: textwhitecolor),
+                            )
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${auth_state.followedCount}",
+                              style: _numberTextStyle,
+                            ),
+                            Text(
+                              "关注",
+                              style: TextStyle(color: textwhitecolor),
+                            )
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${auth_state.followerCount}",
+                              style: _numberTextStyle,
+                            ),
+                            Text(
+                              "粉丝",
+                              style: TextStyle(color: textwhitecolor),
+                            )
+                          ],
+                        )
+                      ]),
+                ),
+                //发布视频按钮
+                const PublishButtonBox(),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Options(),
+                const SizedBox(
+                  height: 25,
+                ),
+                Row(
+                  children: const [
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text(
+                      "更多服务",
+                      style: TextStyle(color: Colors.white, fontSize: 17),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                const BottomOptions()
+              ],
+            ),
           ),
         ),
       ),

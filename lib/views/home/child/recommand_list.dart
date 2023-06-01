@@ -57,36 +57,32 @@ class _RecommandListState extends State<RecommandList> with AutomaticKeepAliveCl
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Container(
-      height: double.infinity,
-      color: Colors.black,
-      child: MediaQuery.removePadding(
-        context: context,
-        removeTop: true,
-        child: NotificationListener<ScrollNotification>(
-          onNotification: (notification)  {
-            if(notification.metrics.pixels==notification.metrics.maxScrollExtent){
-              if(isLoading==false){
-                getRecommend();
-              }else{
-                return false;
-              }
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (notification)  {
+          if(notification.metrics.pixels==notification.metrics.maxScrollExtent){
+            if(isLoading==false){
+              getRecommend();
+            }else{
+              return false;
             }
-
-            return true;
+          }
+          return true;
+        },
+        child: ListView.builder(
+          shrinkWrap: true,
+          // controller: _scrollController,
+          // physics: const NeverScrollableScrollPhysics(),
+          // shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return TwoVideoInOneRow(
+              item1: recommends[index * 2],
+              item2: recommends[index * 2 + 1],
+            );
           },
-          child: ListView.builder(
-            controller: _scrollController,
-            // physics: const NeverScrollableScrollPhysics(),
-            // shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return TwoVideoInOneRow(
-                item1: recommends[index * 2],
-                item2: recommends[index * 2 + 1],
-              );
-            },
-            itemCount: (recommends.length / 2 - 0.1).round(),
-          ),
+          itemCount: (recommends.length / 2 - 0.1).round(),
         ),
       ),
     );

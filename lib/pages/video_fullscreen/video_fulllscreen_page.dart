@@ -18,38 +18,23 @@ class VideoFullScreenPage extends StatefulWidget {
 }
 
 class _VideoFullScreenPageState extends State<VideoFullScreenPage> {
-
   @override
   void initState() {
     super.initState();
-       // 强制横屏
+    // 强制横屏
 
- SystemChrome.setPreferredOrientations([
-     DeviceOrientation.landscapeLeft,
-     DeviceOrientation.landscapeRight
-   ]); 
-
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   }
-
-
 
   @override
   void dispose() {
-        // 强制竖屏
-
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown
-    ]);
-    
-    
+    // 强制竖屏
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
     super.dispose();
-
-
-
   }
-
 
   @override
   Widget build(BuildContext context) {

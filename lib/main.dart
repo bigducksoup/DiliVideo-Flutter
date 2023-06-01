@@ -1,16 +1,16 @@
 import 'dart:convert';
 
-import 'package:dili_video/publish.dart';
-import 'package:dili_video/register.dart';
-import 'package:dili_video/setting_page.dart';
+import 'package:dili_video/pages/publish/publish.dart';
+import 'package:dili_video/pages/register/register.dart';
+import 'package:dili_video/pages/setting/setting_page.dart';
 import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/pages/user_page/user_page.dart';
 import 'package:dili_video/utils/shared_preference.dart';
-import 'package:dili_video/videoItem_manage_page.dart';
-import 'package:dili_video/video_fulllscreen_page.dart';
-import 'package:dili_video/video_history.dart';
-import 'package:dili_video/video_manager.dart';
-import 'package:dili_video/video_page.dart';
+import 'package:dili_video/pages/video_manage/videoItem_manage_page.dart';
+import 'package:dili_video/pages/video_fullscreen/video_fulllscreen_page.dart';
+import 'package:dili_video/pages/video_history/video_history.dart';
+import 'package:dili_video/pages/video_manage/video_manager.dart';
+import 'package:dili_video/pages/video_page/video_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -18,7 +18,7 @@ import './views/activity/activity.dart';
 import 'views/home/home.dart';
 
 import 'views/mine/mine.dart';
-import './login_page.dart';
+import 'pages/login/login_page.dart';
 
 import 'assets/assets.dart';
 import 'controller/index_page_controller.dart';
@@ -91,11 +91,10 @@ class _IndexPageState extends State<IndexPage> {
   @override
   void initState() {
      checktoken();
-    views.add(const Home());
+    super.initState();
+        views.add(const Home());
     views.add(const Activity());
     views.add(const Mine());
-
-    super.initState();
   }
 
   @override
