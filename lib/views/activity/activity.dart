@@ -1,6 +1,6 @@
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:dili_video/views/activity/child/all_activity.dart';
-import 'package:dili_video/views/activity/child/publish_post.dart';
+import 'package:dili_video/views/activity/child/post_publish.dart';
 import 'package:dili_video/views/activity/child/video_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -59,8 +59,8 @@ class _ActivityState extends State<Activity> with SingleTickerProviderStateMixin
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
-              onTap: () {
-                Get.to(PublishPost(),transition: Transition.downToUp);
+              onTap: (){
+                Get.to(PostPublish(),transition: Transition.downToUp);
               },
               child: const Icon(Icons.edit_note,color: Color(0xffa0a2aa),
               size: 30,

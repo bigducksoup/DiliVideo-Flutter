@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+
 import 'dio_manager.dart';
 
 Future sendComment(String content, String videoInfoId) async {
@@ -35,5 +39,26 @@ Future getReply(String fatherCommentId) async {
 Future getPostsByUserId(String userId, int page) async {
   var response = dio.get('/main/post_query/query_by_userId',
       queryParameters: {"userId": userId, "page": page});
+  return response;
+}
+
+Future getTopicList(int page) {
+  var response =
+      dio.get('/main/post_topic/topic_list', queryParameters: {"page": page});
+  return response;
+}
+
+
+Future postText(Map<String,dynamic> postForm)async{
+  
+  List<MultipartFile> files = [];
+
+  for(File f in (postForm['files'] as List)){
+    files.add(await MultipartFile.fromFile(f.path));
+  }
+
+  postForm['files'] = files;
+
+  var response = dio.post('/main/post/text',data: FormData.fromMap(postForm));
   return response;
 }

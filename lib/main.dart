@@ -37,7 +37,7 @@ void main() {
       theme: ThemeData.dark(),
     initialRoute: "/indexPage",
     getPages: [
-      GetPage(name: '/indexPage', page: () => const IndexPage()),
+      GetPage(name: '/indexPage', page: () => const IndexPage(),transition: Transition.fade),
       GetPage(name: '/login', page: () => const Login()),
       GetPage(name: '/publish', page: () => const PublishPage()),
       GetPage(name: '/video', page: ()=>const VideoPage()),

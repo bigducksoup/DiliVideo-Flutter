@@ -5,6 +5,8 @@ import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
 
+import '../../component/img_grid.dart';
+
 class Post extends StatefulWidget {
   const Post({super.key, required this.userId});
 
@@ -21,11 +23,16 @@ class _PostState extends State<Post> with AutomaticKeepAliveClientMixin {
   //页数
   int page = 1;
 
+  bool isEnd = false;
+
   //获取数据
   void getPosts() async {
     var response = await getPostsByUserId(widget.userId, page);
     var res = jsonDecode(response.toString());
     if (res['code'] == 200) {
+      if((res['data'] as List).isEmpty){
+        return;
+      }
       setState(() {
         data.addAll(res['data']);
       });
@@ -35,34 +42,52 @@ class _PostState extends State<Post> with AutomaticKeepAliveClientMixin {
     TextToast.showToast(res['msg']);
   }
 
+
+  bool onScrollNotification(ScrollNotification notification){
+    if(!isEnd && notification.metrics.pixels == notification.metrics.maxScrollExtent){
+      isEnd = true;
+      getPosts();
+    }else if (isEnd && notification.metrics.pixels < notification.metrics.maxScrollExtent){
+      isEnd = false;
+    }
+
+    return true;
+  }
+
   @override
   void initState() {
     super.initState();
     getPosts();
   }
 
+
+
+  //listview在这里
   @override
   Widget build(BuildContext context) {
     return MediaQuery.removePadding(
       context: context,
       removeTop: true,
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return Column(
-            children: [
-              PostItem(
-                item: data[index],
-              ),
-
-              Container(
-                width: double.infinity,
-                height: 10,
-                color: Colors.black,
-              )
-            ],
-          );
-        },
-        itemCount: data.length,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: onScrollNotification,
+        child: ListView.builder(
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                PostItem(
+                  item: data[index],
+                ),
+      
+                Container(
+                  width: double.infinity,
+                  height: 10,
+                  color: Colors.black,
+                )
+              ],
+            );
+          },
+          itemCount: data.length,
+        ),
       ),
     );
   }
@@ -106,6 +131,8 @@ class PostItem extends StatefulWidget {
   State<PostItem> createState() => _PostItemState();
 }
 
+
+//单个动态样式
 class _PostItemState extends State<PostItem> {
   @override
   Widget build(BuildContext context) {
@@ -165,9 +192,11 @@ class _PostItemState extends State<PostItem> {
     );
   }
 
+  //内容渲染
   Widget _buildContent(BuildContext context, var module) {
     double width = MediaQuery.of(context).size.width;
 
+    //判断动态类型
     Widget selector(String typeId) {
       if (typeId == '2') {
         return ImgRowList(
@@ -192,42 +221,7 @@ class _PostItemState extends State<PostItem> {
   }
 }
 
-class ImgRowList extends StatelessWidget {
-  ImgRowList({super.key, required this.width, required this.urls});
-  final double width;
 
-  double _imgMaxWidth = 120;
-
-  final List urls;
-
-  @override
-  Widget build(BuildContext context) {
-    if (width / 3 - 12 < _imgMaxWidth) {
-      _imgMaxWidth = width / 3 - 12;
-    }
-
-    return Wrap(
-      children: [for (int i = 0; i < urls.length; i++) _buildImg(urls[i])],
-    );
-  }
-
-  Widget _buildImg(String url) {
-    return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(width: 0.3,color: Colors.grey)),
-          clipBehavior: Clip.hardEdge,
-          child: Image.network(
-            url,
-            width: _imgMaxWidth,
-            height: _imgMaxWidth,
-            fit: BoxFit.cover,
-          )),
-    );
-  }
-}
 
 class CoverInPost extends StatelessWidget {
   const CoverInPost({super.key});
