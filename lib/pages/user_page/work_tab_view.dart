@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../component/video_item.dart';
 import '../../http/content_api.dart';
 import '../../utils/success_fail_dialog_util.dart';
-import '../video_manage/video_manager.dart';
+
 
 class Works extends StatefulWidget {
   const Works({super.key, required this.userId});

@@ -129,6 +129,8 @@ class _VideoFormState extends State<VideoForm> {
     if (pickedFile != null) {
       setState(() {
         cover = File(pickedFile.path);
+
+
       });
       _form['file'] = await dio.MultipartFile.fromFile(cover!.path,filename: pickedFile.name);
     }
