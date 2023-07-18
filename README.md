@@ -1,10 +1,10 @@
-# Dilivideo-Flutter （持续建造中。。。）
+# Dilivideo-Flutter （更新中）
 
-<br/>
+个人flutter练手项目。
 
-个人flutter练手项目，本人flutter水平比较菜，代码质量比较辣鸡。
+⭕原型：bilibili国际版IOS客户端
 
-<br/>
+
 
 ## 环境
 
@@ -35,8 +35,6 @@ Tools • Dart 3.0.0 (build 3.0.0-21.0.dev) • DevTools 2.20.0
 ## 说明
 
 项目 API 见另一个仓库: DiliVideo-SpringCloud
-
-个人练手项目：仍在开发中
 
 <br/>
 

@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/component/cover_in_post.dart';
+import 'package:dili_video/pages/post_detail/post_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 import 'img_grid.dart';
 
@@ -62,7 +64,15 @@ class _PostItemState extends State<PostItem> {
             const SizedBox(
               height: 10,
             ),
-            _buildContent(context, widget.item['module']),
+            GestureDetector(
+                onTap: () {
+                  if (widget.item['module']['typeId'] == "1") {
+                    return;
+                  } else if (widget.item['module']['typeId'] == "2") {
+                    Get.to(const PostDetailPage(), arguments: widget.item);
+                  }
+                },
+                child: _buildContent(context, widget.item['module'])),
             const SizedBox(
               height: 10,
             ),
@@ -115,9 +125,11 @@ class _PostItemState extends State<PostItem> {
 
     //判断动态类型
     Widget selector(String typeId) {
-
-      if(typeId == '1'){
-        return CoverInPost(); 
+      if (typeId == '1') {
+        return CoverInPost(
+          videoInfoId: widget.item['module']['videoInfoId'],
+          postUserId: widget.item['module']['userId'],
+        );
       }
 
       if (typeId == '2') {
@@ -130,25 +142,29 @@ class _PostItemState extends State<PostItem> {
       return const SizedBox();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          module['description'],
-          style: const TextStyle(fontSize: 17),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        selector(module['typeId'])
-      ],
+    return Container(
+      color: Colors.transparent,
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            module['description'],
+            style: const TextStyle(fontSize: 17),
+          ),
+          Container(
+            color: Colors.transparent,
+            height: 20,
+            width: double.infinity,
+          ),
+          selector(module['typeId'])
+        ],
+      ),
     );
   }
 
   //底部按钮
   Widget _buildBottom(int shareCount, int commentCount, int likeCount) {
-
-
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Row(
@@ -161,7 +177,9 @@ class _PostItemState extends State<PostItem> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.share),
-              const SizedBox(width: 5,),
+              const SizedBox(
+                width: 5,
+              ),
               shareCount == 0 ? const Text("分享") : Text("$shareCount")
             ],
           ),
@@ -173,7 +191,9 @@ class _PostItemState extends State<PostItem> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.comment),
-              const SizedBox(width: 5,),
+              const SizedBox(
+                width: 5,
+              ),
               commentCount == 0 ? const Text("评论") : Text("$commentCount")
             ],
           ),
@@ -187,25 +207,26 @@ class _PostItemState extends State<PostItem> {
               GestureDetector(
                   onTap: () {
                     setState(() {
-                      if(like){
+                      if (like) {
                         widget.item['likeCount']--;
                       }
-                      if(!like){
+                      if (!like) {
                         widget.item['likeCount']++;
                       }
                       like = !like;
-        
                     });
                   },
                   child: Icon(
                     Icons.thumb_up_alt_rounded,
                     color: like ? Colors.pink.shade400 : Colors.white,
                   )),
-                  const SizedBox(width: 5,),
-                  SizedBox(
-                    width: 50,
-                    child: likeCount == 0 ? const Text("点赞") : Text("$likeCount"),
-                  )
+              const SizedBox(
+                width: 5,
+              ),
+              SizedBox(
+                width: 50,
+                child: likeCount == 0 ? const Text("点赞") : Text("$likeCount"),
+              )
             ],
           ),
         )

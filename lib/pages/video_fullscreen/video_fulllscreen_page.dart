@@ -38,7 +38,7 @@ class _VideoFullScreenPageState extends State<VideoFullScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.videoPlayerController);
+    // print(widget.videoPlayerController);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Center(
