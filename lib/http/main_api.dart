@@ -48,17 +48,27 @@ Future getTopicList(int page) {
   return response;
 }
 
-
-Future postText(Map<String,dynamic> postForm)async{
-  
+Future postText(Map<String, dynamic> postForm) async {
   List<MultipartFile> files = [];
 
-  for(File f in (postForm['files'] as List)){
+  for (File f in (postForm['files'] as List)) {
     files.add(await MultipartFile.fromFile(f.path));
   }
 
   postForm['files'] = files;
 
-  var response = dio.post('/main/post/text',data: FormData.fromMap(postForm));
+  var response = dio.post('/main/post/text', data: FormData.fromMap(postForm));
+  return response;
+}
+
+
+//获取动态评论
+Future getPostComment(int page, String postId, {bool orderByTime = false}) {
+  var response = dio.get('/main/post_comment/get_comments', queryParameters: {
+    "page": page,
+    "pageSize": 20,
+    "postId": postId,
+    "orderByTime": orderByTime
+  });
   return response;
 }

@@ -44,7 +44,6 @@ class Comment extends StatelessWidget {
 
   final Function(String id) setReplyToid;
 
-  TextEditingController commentController = Get.find<TextEditingController>();
 
   FocusNode commentInputFocusNode = Get.find();
 

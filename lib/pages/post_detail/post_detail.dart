@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/component/img_grid.dart';
-import 'package:dili_video/theme/colors.dart';
+import 'package:dili_video/component/video_page/%20comment.dart';
+import 'package:dili_video/http/main_api.dart';
+import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,6 +23,12 @@ class _PostDetailPageState extends State<PostDetailPage>
   late Map<String, dynamic> item;
 
   late TabController tabController;
+
+  List comments = [];
+
+  int commentPage = 1;
+
+  bool commentLoading = true;
 
   int curTabIndex = 1;
 
@@ -47,10 +57,7 @@ class _PostDetailPageState extends State<PostDetailPage>
   //           ]
   //       }
 
-  @override
-  void initState() {
-    super.initState();
-    item = Get.arguments;
+  void initTabController() {
     tabController = TabController(length: 2, vsync: this, initialIndex: 1);
     curTabIndex = tabController.index;
 
@@ -61,6 +68,31 @@ class _PostDetailPageState extends State<PostDetailPage>
         });
       }
     });
+  }
+
+  void loadComment() async {
+    var response = await getPostComment(commentPage, item['id']);
+    var res = jsonDecode(response.toString());
+    if (res['code'] != 200) {
+      TextToast.showToast(res['msg']);
+      return;
+    }
+
+    if (res['data'].length != 0) {
+      commentPage++;
+    }
+    setState(() {
+      comments.addAll(res['data']);
+      commentLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    item = Get.arguments;
+    initTabController();
+    loadComment();
   }
 
   @override
@@ -119,23 +151,15 @@ class _PostDetailPageState extends State<PostDetailPage>
               }, childCount: 30))
             : SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
-                return ListTile(title: Text('Item $index'));
-              }, childCount: 1)),
+                return FlutterLogo();
+              }, childCount: comments.length)),
       ],
     ));
   }
-
 }
-
-
-
-
-
-
 
 class _Detail extends StatefulWidget {
   const _Detail({super.key, required this.item, this.child});
-
 
   final Map<String, dynamic> item;
   final Map<String, dynamic>? child;
@@ -145,64 +169,56 @@ class _Detail extends StatefulWidget {
 }
 
 class __DetailState extends State<_Detail> {
-
-
   Widget _buildHeader(String nickName, String time, String avatarUrl) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-              width: 50,
-              height: 50,
-              clipBehavior: Clip.hardEdge,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(50)),
-              child: CachedNetworkImage(
-                imageUrl: avatarUrl,
-                fit: BoxFit.cover,
-              )),
-          const SizedBox(
-            width: 20,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                nickName,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
-              Text(
-                time.substring(0, 16),
-                style: const TextStyle(fontSize: 12),
-              )
-            ],
-          )
-        ],
-      );
-    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+            width: 50,
+            height: 50,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
+            child: CachedNetworkImage(
+              imageUrl: avatarUrl,
+              fit: BoxFit.cover,
+            )),
+        const SizedBox(
+          width: 20,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              nickName,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              time.substring(0, 16),
+              style: const TextStyle(fontSize: 12),
+            )
+          ],
+        )
+      ],
+    );
+  }
 
-
-    Widget _buildContent(String content, List imgList, {Map<String, dynamic>? child}) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            content,
-            style: const TextStyle(fontSize: 17),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          ImgRowList(width: MediaQuery.of(context).size.width, urls: imgList),
-        ],
-      );
-    }
-
-
-
-
+  Widget _buildContent(String content, List imgList,
+      {Map<String, dynamic>? child}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          content,
+          style: const TextStyle(fontSize: 17),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        ImgRowList(width: MediaQuery.of(context).size.width, urls: imgList),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,11 +228,15 @@ class __DetailState extends State<_Detail> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(widget.item['module']['userNickname'], widget.item['createTime'], widget.item['module']['userAvatarUrl']),
+          _buildHeader(
+              widget.item['module']['userNickname'],
+              widget.item['createTime'],
+              widget.item['module']['userAvatarUrl']),
           const SizedBox(
             height: 10,
           ),
-          _buildContent(widget.item['module']['description'], widget.item['module']['imgs'])
+          _buildContent(widget.item['module']['description'],
+              widget.item['module']['imgs'])
         ],
       ),
     );

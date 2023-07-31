@@ -21,8 +21,25 @@ Future getUploadCode() async {
 
 //上传视频
 Future uploadVideo(Map<String,dynamic> data) async {
+
+
+  
   var formdata = FormData.fromMap(data);
   var response = dio.post('/content/video/upload',data: formdata);
+  return response;
+}
+
+
+//上传分片
+Future uploadVideoChunk(Map<String,dynamic> data) async {
+    ///data:
+  /// String code
+  /// MultipartFile file
+  /// Integer index
+  /// Integer totalChunkCount
+  /// String fileName
+  var formdata = FormData.fromMap(data);
+  var response = dio.post('/content/video/upload_chunk',data: formdata);
   return response;
 }
 
