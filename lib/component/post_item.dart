@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/component/cover_in_post.dart';
+import 'package:dili_video/component/time_formatter.dart';
 import 'package:dili_video/pages/post_detail/post_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -109,10 +110,7 @@ class _PostItemState extends State<PostItem> {
               nickName,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            Text(
-              time.substring(0, 16),
-              style: const TextStyle(fontSize: 12),
-            )
+            TimeComparisonScreen(dateTimeString: time)
           ],
         )
       ],

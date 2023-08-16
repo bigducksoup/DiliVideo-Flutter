@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/component/time_formatter.dart';
 import 'package:flutter/material.dart';
 
 
@@ -81,8 +82,7 @@ class VideoItem extends StatelessWidget {
                       style: const TextStyle(color: Colors.white),
                     ),
                     const Expanded(child: SizedBox()),
-                    Text(date.substring(0, 10),
-                        style: const TextStyle(color: Colors.white))
+                    TimeComparisonScreen(dateTimeString: date)
                   ],
                 )
               ],

@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/component/img_grid.dart';
-import 'package:dili_video/component/video_page/%20comment.dart';
+import 'package:dili_video/component/post_comment_item.dart';
+import 'package:dili_video/entity/comment_params.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
@@ -151,7 +152,11 @@ class _PostDetailPageState extends State<PostDetailPage>
               }, childCount: 30))
             : SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
-                return FlutterLogo();
+                return PostCommentItem(
+                    params: CommentDisplayParams.fromJson(comments[index]),
+                    postId: comments[index]['id'],
+                    upId: comments[index]['userId'],
+                    slot: Text("TODO"),);
               }, childCount: comments.length)),
       ],
     ));

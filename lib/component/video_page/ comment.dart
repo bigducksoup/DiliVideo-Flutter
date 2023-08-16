@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/component/time_formatter.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/theme/colors.dart';
 import 'package:dili_video/services/router.dart';
@@ -92,10 +93,7 @@ class Comment extends StatelessWidget {
                       style: textStyle,
                     ),
                   ),
-                  Text(
-                    date,
-                    style: textStyle,
-                  )
+                  TimeComparisonScreen(dateTimeString: date)
                 ],
               )
             ],
@@ -448,10 +446,7 @@ class _ReplyBottomSheetContentState extends State<ReplyBottomSheetContent> {
                 data[index]['replierName'],
                 style: const TextStyle(color: Colors.white, fontSize: 15),
               ),
-              Text(
-                (data[index]['time'] as String).split("T")[0],
-                style: const TextStyle(color: Colors.white, fontSize: 13),
-              ),
+              TimeComparisonScreen(dateTimeString: data[index]['time']),
               const SizedBox(
                 height: 10,
               ),

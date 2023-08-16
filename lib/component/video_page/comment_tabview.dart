@@ -145,8 +145,7 @@ class _CommentViewState extends State<CommentView> with AutomaticKeepAliveClient
                     id: commentList[index]['id'],
                     avatarUrl: commentList[index]['userAvatarUrl'],
                     userName: commentList[index]['userNickname'],
-                    date: (commentList[index]['createTime'] as String)
-                        .split("T")[0],
+                    date: commentList[index]['createTime'],
                     content: commentList[index]['content'],
                     children: commentList[index]['children'],
                     userId: commentList[index]['userId'],

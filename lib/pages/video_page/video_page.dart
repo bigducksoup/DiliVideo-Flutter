@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/component/time_formatter.dart';
 import 'package:dili_video/component/video_page/comment_tabview.dart';
 import 'package:dili_video/danmu_player/barrage_controller.dart';
 import 'package:dili_video/danmu_player/send_barrage.dart';
@@ -709,12 +710,12 @@ class _VideoTitleAndInfoState extends State<VideoTitleAndInfo> {
               const Icon(
                 Icons.play_arrow_outlined,
                 size: 20,
-                color: Colors.white30,
+                color: Colors.white54,
                 weight: 10,
               ),
               Text(
                 "${widget.videoInfo['watchCount']}",
-                style: const TextStyle(color: Colors.white30),
+                style: const TextStyle(color: Colors.white54),
               ),
               const SizedBox(
                 width: 10,
@@ -722,22 +723,19 @@ class _VideoTitleAndInfoState extends State<VideoTitleAndInfo> {
               const Icon(
                 Icons.comment,
                 size: 20,
-                color: Colors.white30,
+                color: Colors.white54,
               ),
               const SizedBox(
                 width: 5,
               ),
               Text(
                 "${widget.videoInfo['commentCount']}",
-                style: const TextStyle(color: Colors.white30),
+                style: const TextStyle(color: Colors.white54),
               ),
               const SizedBox(
                 width: 10,
               ),
-              Text(
-                (widget.videoInfo['createTime'] as String).substring(0, 16),
-                style: const TextStyle(color: Colors.white30),
-              )
+              TimeComparisonScreen(dateTimeString: widget.videoInfo['createTime']),
             ],
           ),
           const SizedBox(
