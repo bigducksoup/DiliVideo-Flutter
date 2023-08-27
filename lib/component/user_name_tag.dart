@@ -69,7 +69,7 @@ class NickNameTag extends StatelessWidget {
         space,
         _buildLevel(level),
         space,
-        if(ifUp)const FaIcon(FontAwesomeIcons.user,size: 16,color: Colors.pink)
+        if(ifUp)const FaIcon(FontAwesomeIcons.user,size: 16,color: Colors.pink),
       ],
     );
   }

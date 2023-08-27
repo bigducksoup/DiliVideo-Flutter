@@ -1,8 +1,13 @@
-import 'dart:ffi';
+
 
 import 'package:dili_video/component/number_formater.dart';
 import 'package:flutter/material.dart';
 
+///
+///The LikeAction widget is a stateful Flutter widget that represents a "like" action. 
+///It displays an icon that can be tapped to toggle the "like" state and also shows the number of likes.
+/// It accepts properties for the icon size, the initial "like" state, the like count, and optional callbacks for the "like" and non-like actions.
+/// 
 class LikeAction extends StatefulWidget {
    const LikeAction({super.key, this.size = 18, required this.like, this.likeAction, this.disLikeAction, required this.likeCount});
 
@@ -68,8 +73,11 @@ class _LikeActionState extends State<LikeAction> {
   }
 }
 
-
-
+/// 
+/// The HateAction widget is a stateful Flutter widget that represents a "hate" action. 
+/// It displays an icon that can be tapped to toggle the "hate" state. 
+/// It accepts properties for the icon size, the initial "hate" state, and optional callbacks for the "hate" and non-hate actions.
+/// 
 class HateAction extends StatefulWidget {
    const HateAction({super.key, this.size = 18, required this.hate, this.hateAction, this.disHateAction});
 

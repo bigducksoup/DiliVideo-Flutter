@@ -72,3 +72,11 @@ Future getPostComment(int page, String postId, {bool orderByTime = false}) {
   });
   return response;
 }
+
+
+
+//like action for post,post comment and VideoComment
+Future likeAction(int type, String id) async {
+  var response = dio.post('/main/action/like', data: {"targetType": type, "targetId": id});
+  return response;
+}

@@ -1,10 +1,11 @@
-import 'dart:ffi';
+
 
 import 'package:dili_video/component/like.dart';
 import 'package:dili_video/component/time_formatter.dart';
 import 'package:dili_video/component/user_avatar_small.dart';
 import 'package:dili_video/component/user_name_tag.dart';
 import 'package:dili_video/entity/comment_params.dart';
+import 'package:dili_video/http/main_api.dart';
 import 'package:flutter/material.dart';
 
 class PostCommentItem extends StatefulWidget {
@@ -12,7 +13,7 @@ class PostCommentItem extends StatefulWidget {
       {super.key,
       required this.params,
       required this.postId,
-      required this.upId, this.slot});
+      required this.upId, this.slot, this.onClickAvatarAndName, this.onClickContent});
 
   final CommentDisplayParams params;
 
@@ -21,6 +22,10 @@ class PostCommentItem extends StatefulWidget {
   final String upId;
 
   final Widget? slot;
+
+  final Function(String userId,String userAvatar)? onClickAvatarAndName;
+
+  final Function(String content, String commentId,String userNickName)? onClickContent;
 
   @override
   State<PostCommentItem> createState() => _PostCommentItemState();
@@ -36,51 +41,59 @@ class _PostCommentItemState extends State<PostCommentItem> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width / 7,
               child: Column(
-                children: [UserAvatarSmall(url: widget.params.userAvatarUrl)],
+                children: [GestureDetector(onTap: () {
+                  widget.onClickAvatarAndName?.call(widget.params.userId,widget.params.userAvatarUrl);
+                },child: UserAvatarSmall(url: widget.params.userAvatarUrl))],
               ),
             ),
             Expanded(
-                child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  NickNameTag(
-                    level: widget.params.userLevel,
-                    name: widget.params.userNickname,
-                    ifUp: widget.upId == widget.params.userId,
-                    ifVIP: true,
-                    userId: widget.params.userId,
-                  ),
-                  TimeComparisonScreen(
-                    dateTimeString: widget.params.createTime,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(widget.params.content,
-                      softWrap: true, style: const TextStyle(fontSize: 17)),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children:  const [
-                      LikeAction(
-                        like: false,
-                        size: 20,
-                        likeCount: 2131122,
-                      ),
-                      SizedBox(width: 10,), // TODO like
-                      HateAction(hate: false,size: 20,),
-                    ],
-                  ),
-                  const SizedBox(height: 10,),
-                  widget.slot==null? const SizedBox(width: 0,height: 0,):widget.slot!
-                ],
-              ),
-            ))
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NickNameTag(
+                      level: widget.params.userLevel,
+                      name: widget.params.userNickname,
+                      ifUp: widget.upId == widget.params.userId,
+                      ifVIP: true,
+                      userId: widget.params.userId,
+                    ),
+                    TimeComparisonScreen(
+                      dateTimeString: widget.params.createTime,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        widget.onClickContent?.call(widget.params.content, widget.postId, widget.params.userNickname);
+                      },
+                      child: Text(widget.params.content,
+                          softWrap: true, style: const TextStyle(fontSize: 17)),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children:   [
+                        LikeAction(
+                          like: false,
+                          size: 20,
+                          likeCount: widget.params.likeCount,
+                          likeAction: (){
+                            likeAction(0, widget.postId); 
+                          },
+                        ),
+                        const SizedBox(width: 10,), // TODO like
+                        const HateAction(hate: false,size: 20,),
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
+                    widget.slot==null? const SizedBox(width: 0,height: 0,):widget.slot!
+                  ],
+                ))
           ],
         ));
   }

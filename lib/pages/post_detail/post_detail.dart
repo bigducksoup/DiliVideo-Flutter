@@ -1,10 +1,16 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/component/RoundedInput.dart';
+import 'package:dili_video/component/child_comment_preview.dart';
 import 'package:dili_video/component/img_grid.dart';
 import 'package:dili_video/component/post_comment_item.dart';
+import 'package:dili_video/component/time_formatter.dart';
+import 'package:dili_video/controller/RoundedInputController.dart';
+import 'package:dili_video/entity/child_comment_preview.dart';
 import 'package:dili_video/entity/comment_params.dart';
 import 'package:dili_video/http/main_api.dart';
+import 'package:dili_video/services/router.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -32,6 +38,14 @@ class _PostDetailPageState extends State<PostDetailPage>
   bool commentLoading = true;
 
   int curTabIndex = 1;
+
+  late RoundedInputController roundedInputController;
+
+  String bottomHint = "#说点什么吧";
+
+  int replyMode = 0;
+
+  late String replyTargetId;
 
   // {
   //           "id": "6f6b73e3-a882-4b3a-b980-c0055073558e",
@@ -88,83 +102,163 @@ class _PostDetailPageState extends State<PostDetailPage>
     });
   }
 
+
+  void switchReplyMode(int mode, {String? name, String? targetId}){
+    if (mode == 0){
+      setState(() {
+        replyMode = mode;
+        bottomHint = "#说点什么吧";
+        replyTargetId = item['id'];
+      });
+    }else if(mode == 1 ){
+      setState(() {
+        replyMode = mode;
+        bottomHint = "回复@$name";
+        replyTargetId = targetId!;
+        roundedInputController.focus();
+      });
+    }
+  }
   @override
   void initState() {
     super.initState();
+    roundedInputController = RoundedInputController();
     item = Get.arguments;
     initTabController();
     loadComment();
   }
 
+
+  @override
+  void dispose() {
+    roundedInputController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: CustomScrollView(
-      slivers: [
-        const SliverAppBar(
-          title: Text("动态详情"),
-          pinned: true,
-          floating: false,
-          elevation: 0,
-        ),
-        SliverToBoxAdapter(
-          child: _Detail(item: item),
-        ),
-        SliverPersistentHeader(
-          pinned: true,
-          delegate: PersistentHeader(
-            minHeight: 50.0,
-            maxHeight: 50.0,
-            child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF303030),
-                  border: Border(bottom: BorderSide()),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 130,
-                      child: TabBar(
-                        tabs: const [
-                          Tab(
-                            text: "转发",
+    return GestureDetector(
+      onTap: () {
+        roundedInputController.unfocus();
+        switchReplyMode(0);
+      },
+      child: Scaffold(
+          body: Column(
+        children: [
+          Expanded(
+            child: SizedBox(
+              child: CustomScrollView(
+                slivers: [
+                  const SliverAppBar(
+                    title: Text("动态详情"),
+                    pinned: true,
+                    floating: false,
+                    elevation: 0,
+                  ),
+                  SliverToBoxAdapter(
+                    child: _Detail(item: item),
+                  ),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: PersistentHeader(
+                      minHeight: 50.0,
+                      maxHeight: 50.0,
+                      child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF303030),
+                            border: Border(bottom: BorderSide()),
                           ),
-                          Tab(
-                            text: "评论",
-                          ),
-                        ],
-                        indicatorSize: TabBarIndicatorSize.label,
-                        indicatorColor: Colors.pink.shade400,
-                        controller: tabController,
-                      ),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 130,
+                                child: TabBar(
+                                  tabs: const [
+                                    Tab(
+                                      text: "转发",
+                                    ),
+                                    Tab(
+                                      text: "评论",
+                                    ),
+                                  ],
+                                  indicatorSize: TabBarIndicatorSize.label,
+                                  indicatorColor: Colors.pink.shade400,
+                                  controller: tabController,
+                                ),
+                              ),
+                              const Expanded(child: SizedBox())
+                            ],
+                          )),
                     ),
-                    const Expanded(child: SizedBox())
-                  ],
-                )),
+                  ),
+                  curTabIndex == 0
+                      ? SliverList(
+                          delegate: SliverChildBuilderDelegate((context, index) {
+                          return ListTile(title: Text('Item $index'));
+                        }, childCount: 30))
+                      : SliverList(
+                          delegate: SliverChildBuilderDelegate((context, index) {
+                          //build childPreviewComment list for ChildCommentListPreview
+                          List<ChildPreviewComment> list = [];
+                          for (int i = 0;i < comments[index]['child'].length;i++) {
+                            Map<String, dynamic> item = comments[index]['child'][i];
+                            list.add(ChildPreviewComment.fromJson(item));
+                          }
+                          return PostCommentItem(
+                            params: CommentDisplayParams.fromJson(comments[index]),
+                            postId: comments[index]['id'],
+                            upId: comments[index]['userId'],
+                            onClickContent: (content, commentId, userNickName) {
+                              switchReplyMode(1,name: userNickName,targetId: commentId);
+                            },
+                            slot: ChildCommentListPreview(
+                              list: list,
+                              onClickUsername: (userId, userName) {
+                                //judge if current post owner is comment owner
+                                //if so not route to user page because it can cause stack over flow
+                                if (item['module']['userId'] != userId) {
+                                  routeToUserPage(userId);
+                                }
+                              },
+                              clickSeeMore: () {
+                                //TODO show more comments
+                                print("show more comments");
+                              },
+                            ),
+                            onClickAvatarAndName: (userId, userAvatar) {
+                              //judge if current post owner is comment owner
+                              //if so not route to user page because it can cause stack over flow
+                              if (item['module']['userId'] != userId) {
+                                routeToUserPage(userId);
+                              }
+                            },
+                          );
+                        }, childCount: comments.length)),
+                ],
+              ),
+            ),
           ),
-        ),
-        curTabIndex == 0
-            ? SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                return ListTile(title: Text('Item $index'));
-              }, childCount: 30))
-            : SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                return PostCommentItem(
-                    params: CommentDisplayParams.fromJson(comments[index]),
-                    postId: comments[index]['id'],
-                    upId: comments[index]['userId'],
-                    slot: Text("TODO"),);
-              }, childCount: comments.length)),
-      ],
-    ));
+    
+          //bottom input Container
+          Container(
+            decoration: const BoxDecoration(
+              border: Border(top: BorderSide())
+            ),
+            width: double.infinity,
+            height: 80,
+            padding: const EdgeInsets.only(bottom: 20),
+            child: RoundedInput(roundedInputController: roundedInputController,hintText: bottomHint,),
+          )
+        ],
+      )),
+    );
   }
 }
 
 class _Detail extends StatefulWidget {
-  const _Detail({super.key, required this.item, this.child});
+  const _Detail({required this.item, this.child});
 
   final Map<String, dynamic> item;
   final Map<String, dynamic>? child;
@@ -198,10 +292,7 @@ class __DetailState extends State<_Detail> {
               nickName,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
-            Text(
-              time.substring(0, 16),
-              style: const TextStyle(fontSize: 12),
-            )
+            TimeComparisonScreen(dateTimeString: time)
           ],
         )
       ],

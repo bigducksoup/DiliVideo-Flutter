@@ -4,13 +4,10 @@ import 'package:dili_video/http/auth_api.dart';
 import 'package:dili_video/pages/user_page/post_tab_view.dart';
 import 'package:dili_video/pages/user_page/work_tab_view.dart';
 import 'package:dili_video/services/userOperation.dart';
-import 'package:dili_video/theme/colors.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
-import 'package:dili_video/pages/video_manage/video_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../http/content_api.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
