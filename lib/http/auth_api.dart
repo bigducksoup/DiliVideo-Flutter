@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 
 import 'dio_manager.dart';
 
+/// login by email
 Future loginbyemail(String email, String password, int timestamp, String ip) async {
   var response = dio.post('/auth/login/login_by_email', data: {
     "email": email,
@@ -17,23 +18,22 @@ Future loginbyemail(String email, String password, int timestamp, String ip) asy
 }
 
 
+///check if token is valid
 Future checklogin() async {
   var response = dio.get('/auth/login/check_login');
   return response;
 }
 
-
+//get user info
 Future getBasicUserInfo(id){
-
    var response = dio.get('/auth/user_info/basic',queryParameters: {
      "userId":id
    });
-
    return response;
-
 }
 
 
+// follow someone
 Future follow(String followId){
 
   var response = dio.post('/auth/relation/follow',data: {
@@ -43,7 +43,7 @@ Future follow(String followId){
   return response;
 
 }
-
+// unfollow someone
 Future unfollow(String followId){
 
   var response = dio.post('/auth/relation/unfollow',data: {
@@ -54,6 +54,7 @@ Future unfollow(String followId){
 
 }
 
+// check follow relation
 Future checkFollow(String followId){
 
   var response = dio.get('/auth/relation/check_follow',queryParameters: {
@@ -65,6 +66,7 @@ Future checkFollow(String followId){
 }
 
 
+// request send verify code to email
 Future sendVerifyCodeByEmail(String email){
   var response = dio.get('/auth/register/get_code_by_email',queryParameters: {
     "email":email
@@ -73,7 +75,7 @@ Future sendVerifyCodeByEmail(String email){
   return response;
 }
 
-
+// upload avatar while registering
 Future upLoadRegAvatar(File avatar)async{
 
   Map<String,dynamic> form = {
@@ -91,7 +93,7 @@ Future upLoadRegAvatar(File avatar)async{
   return response;
 }
 
-
+// submit register form
 Future submitRegForm(Map<String,dynamic> form){
 
   var response = dio.post('/auth/register/submit_form',data:form );

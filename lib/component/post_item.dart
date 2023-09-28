@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/component/child_module.dart';
 import 'package:dili_video/component/cover_in_post.dart';
 import 'package:dili_video/component/time_formatter.dart';
 import 'package:dili_video/pages/post_detail/post_detail.dart';
@@ -78,7 +79,7 @@ class _PostItemState extends State<PostItem> {
               height: 10,
             ),
             _buildBottom(widget.item['shareCount'], widget.item['commentCount'],
-                widget.item['likeCount'])
+                widget.item['likeCount'], widget.item['module']['typeId'],widget.item['id'])
           ],
         ),
       ),
@@ -123,6 +124,7 @@ class _PostItemState extends State<PostItem> {
 
     //判断动态类型
     Widget selector(String typeId) {
+      //发布视频动态
       if (typeId == '1') {
         return CoverInPost(
           videoInfoId: widget.item['module']['videoInfoId'],
@@ -130,10 +132,29 @@ class _PostItemState extends State<PostItem> {
         );
       }
 
+      //发布文字动态
       if (typeId == '2') {
         return ImgRowList(
           width: width,
           urls: module['imgs'],
+        );
+      }
+
+      //转发视频动态
+      if (typeId == '3') {
+        return CoverInPost(
+          videoInfoId: widget.item['module']['videoInfoId'],
+          postUserId: widget.item['module']['userId'],
+        );
+      }
+
+      //转发动态
+      if (typeId == '4') {
+        return Column(
+          children: [
+            ImgRowList(width: width, urls: module['imgs']),
+            ChildPost(postId: module['childPostId'])
+          ],
         );
       }
 
@@ -162,7 +183,7 @@ class _PostItemState extends State<PostItem> {
   }
 
   //底部按钮
-  Widget _buildBottom(int shareCount, int commentCount, int likeCount) {
+  Widget _buildBottom(int shareCount, int commentCount, int likeCount,String typeId,String targetId) {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Row(
@@ -182,18 +203,27 @@ class _PostItemState extends State<PostItem> {
             ],
           ),
         ),
-        SizedBox(
-          height: 40,
-          width: (screenWidth - 16) / 3,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.comment),
-              const SizedBox(
-                width: 5,
-              ),
-              commentCount == 0 ? const Text("评论") : Text("$commentCount")
-            ],
+        GestureDetector(
+          onTap: () {
+            if(typeId == '1'){
+              Get.toNamed('/video', arguments: widget.item['module']['videoInfoId']);
+            }else{
+              Get.to(const PostDetailPage(), arguments: widget.item);
+            }
+          },
+          child: SizedBox(
+            height: 40,
+            width: (screenWidth - 16) / 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.comment),
+                const SizedBox(
+                  width: 5,
+                ),
+                commentCount == 0 ? const Text("评论") : Text("$commentCount")
+              ],
+            ),
           ),
         ),
         SizedBox(

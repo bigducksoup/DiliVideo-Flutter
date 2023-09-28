@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dili_video/pages/publish/publish.dart';
 import 'package:dili_video/pages/register/register.dart';
+import 'package:dili_video/pages/search/search.dart';
 import 'package:dili_video/pages/setting/setting_page.dart';
 import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/pages/user_page/user_page.dart';
@@ -46,7 +47,8 @@ void main() {
       GetPage(name: '/user_info', page: ()=>const UserPage()),
       GetPage(name: '/setting', page: ()=>const SettingPage()),
       GetPage(name: '/register', page: ()=>const RegisterPage()),
-      GetPage(name: '/video_history', page: ()=> const VideoHistoryPage())
+      GetPage(name: '/video_history', page: ()=> const VideoHistoryPage()),
+      GetPage(name: '/search', page: ()=>const SearchPage(),transition: Transition.fade, )
     ],
   ));
   });

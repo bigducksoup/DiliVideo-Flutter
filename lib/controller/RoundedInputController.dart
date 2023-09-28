@@ -31,4 +31,9 @@ class RoundedInputController{
     textEditingController.clear();
   }
 
+
+  void setText(String text){
+    textEditingController.text = text;
+  }
+
 }

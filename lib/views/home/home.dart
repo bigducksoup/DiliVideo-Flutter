@@ -107,27 +107,32 @@ class _HomeState extends State<Home>
   }
 
   Widget _buildSearchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: const Color(0xff242527),
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed('/search');
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: const Color(0xff242527),
+        ),
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+        height: 35,
+        child: Row(children: const [
+          SizedBox(width: 20),
+          Icon(
+            Icons.search,
+            color: Color(0xff5d5e62),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            "搜你想搜",
+            style: TextStyle(color: Color(0xff5d5e62)),
+          )
+        ]),
       ),
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-      height: 35,
-      child: Row(children: const [
-        SizedBox(width: 20),
-        Icon(
-          Icons.search,
-          color: Color(0xff5d5e62),
-        ),
-        SizedBox(
-          width: 10,
-        ),
-        Text(
-          "今天吃什么？",
-          style: TextStyle(color: Color(0xff5d5e62)),
-        )
-      ]),
     );
   }
 

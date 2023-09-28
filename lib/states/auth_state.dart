@@ -1,6 +1,7 @@
 
 import 'package:get/get.dart';
 
+/// AuthState store runtime user auth state
 class AuthState{
 
 

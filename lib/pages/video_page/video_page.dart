@@ -20,6 +20,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../utils/success_fail_dialog_util.dart';
+
 class VideoPage extends StatefulWidget {
   const VideoPage({super.key});
 
@@ -54,17 +56,50 @@ class _VideoPageState extends State<VideoPage>
 
   late TabController _tabController;
 
+  int status = 0;
+
+  void initVideoInfo(videoInfoId) async {
+    var response = await getVideoInfoById(videoInfoId);
+    Map<String, dynamic> res = jsonDecode(response.toString());
+
+    if (res['code'] != 200) {
+      setState(() {
+        status = 3;
+      });
+      return;
+    }
+
+    if (res['code'] == 200) {
+      setState(() {
+        item = res['data'];
+        status = 1;
+      });
+      LocalStorge.addToStringList(
+          "videoHistory" + auth_state.id.value, item['videoInfoId']);
+    }
+  }
+
   @override
   void initState() {
     item = Get.arguments;
+
+    if (item.runtimeType != String) {
+      setState(() {
+        status = 1;
+      });
+      LocalStorge.addToStringList(
+          "videoHistory" + auth_state.id.value, item['videoInfoId']);
+    } else {
+      //获取信息
+      initVideoInfo(Get.arguments);
+    }
+
     _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
-        SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    LocalStorge.addToStringList("videoHistory" + auth_state.id.value, item['videoInfoId']);
 
     super.initState();
-
   }
 
   @override
@@ -77,52 +112,66 @@ class _VideoPageState extends State<VideoPage>
           appBar: AppBar(
             toolbarHeight: 0,
           ),
-          body: Container(
-            color: maindarkcolor,
-            width:MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Column(children: [
-              MyVideoPlayer(
-                width: width,
-                height: MediaQuery.of(context).size.height > MediaQuery.of(context).size.width ? width * 9 / 16 : MediaQuery.of(context).size.height,
-                item: item,
-              ),
-              Visibility(
-                visible:  MediaQuery.of(context).size.height> MediaQuery.of(context).size.width? true:false,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 0.5 * width,
-                      child: TabBar(
-                          indicatorSize: TabBarIndicatorSize.label,
-                          labelColor: Colors.pink.shade400,
-                          indicatorColor: Colors.pink.shade300,
-                          unselectedLabelColor: Colors.white,
-                          controller: _tabController,
-                          tabs: const [
-                            Tab(
-                              text: '简介',
-                            ),
-                            Tab(text: "评论")
-                          ]),
+          body: status == 0
+              ? Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  color: maindarkcolor,
+                  child:  Center(child: CircularProgressIndicator(color: Colors.pink.shade400,)))
+              : Container(
+                  color: maindarkcolor,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(children: [
+                    MyVideoPlayer(
+                      width: width,
+                      height: MediaQuery.of(context).size.height >
+                              MediaQuery.of(context).size.width
+                          ? width * 9 / 16
+                          : MediaQuery.of(context).size.height,
+                      item: item,
                     ),
-                    SendBarrage(width: width, videoInfoId: item['videoInfoId'])
-                  ],
-                ),
-              ),
-              Expanded(
-                  child: TabBarView(controller: _tabController, children: [
-                SingleChildScrollView(
-                  child: VideoInfoView(
-                    item: item,
-                  ),
-                ),
-                CommentView(
-                  videoInfoId: item['videoInfoId'],
-                )
-              ]))
-            ]),
-          )),
+                    Visibility(
+                      visible: MediaQuery.of(context).size.height >
+                              MediaQuery.of(context).size.width
+                          ? true
+                          : false,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 0.5 * width,
+                            child: TabBar(
+                                indicatorSize: TabBarIndicatorSize.label,
+                                labelColor: Colors.pink.shade400,
+                                indicatorColor: Colors.pink.shade300,
+                                unselectedLabelColor: Colors.white,
+                                controller: _tabController,
+                                tabs: const [
+                                  Tab(
+                                    text: '简介',
+                                  ),
+                                  Tab(text: "评论")
+                                ]),
+                          ),
+                          SendBarrage(
+                              width: width, videoInfoId: item['videoInfoId'])
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                        child:
+                            TabBarView(controller: _tabController, children: [
+                      SingleChildScrollView(
+                        child: VideoInfoView(
+                          item: item,
+                        ),
+                      ),
+                      CommentView(
+                        videoInfoId: item['videoInfoId'],
+                      )
+                    ]))
+                  ]),
+                )),
     );
   }
 }
@@ -223,7 +272,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
         children: [
           SizedBox(
             width: width,
-            height:widget.height,
+            height: widget.height,
             child: Hero(
               tag: widget.item['videoInfoId'],
               child: buildPlayerWindow(),
@@ -333,7 +382,12 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                                     })),
                             GestureDetector(
                               onTap: () {
-                                Get.to(VideoFullScreenPage(videoPlayerController: _videoController,tag: widget.item['videoInfoId'],),transition: Transition.fadeIn);
+                                Get.to(
+                                    VideoFullScreenPage(
+                                      videoPlayerController: _videoController,
+                                      tag: widget.item['videoInfoId'],
+                                    ),
+                                    transition: Transition.fadeIn);
                               },
                               child: const FaIcon(
                                 FontAwesomeIcons.maximize,
@@ -364,8 +418,9 @@ class VideoInfoView extends StatefulWidget {
   State<VideoInfoView> createState() => _VideoInfoViewState();
 }
 
-class _VideoInfoViewState extends State<VideoInfoView> with AutomaticKeepAliveClientMixin{
-     Map<String, dynamic> _videoUserInfo = {};
+class _VideoInfoViewState extends State<VideoInfoView>
+    with AutomaticKeepAliveClientMixin {
+  Map<String, dynamic> _videoUserInfo = {};
 
   // {
   //   "id": "1",
@@ -386,11 +441,10 @@ class _VideoInfoViewState extends State<VideoInfoView> with AutomaticKeepAliveCl
     var response = await getVideoAuthorInfo(widget.item['videoAuthorId']);
     var res = jsonDecode(response.toString());
 
-     setState(() {
-        _videoUserInfo = res['data'];
-     });
+    setState(() {
+      _videoUserInfo = res['data'];
+    });
 
-  
     return res['data'];
   }
 
@@ -402,7 +456,9 @@ class _VideoInfoViewState extends State<VideoInfoView> with AutomaticKeepAliveCl
 
   @override
   Widget build(BuildContext context) {
-    return _videoUserInfo.isEmpty? const Center(child: CircularProgressIndicator()):Column(
+    return _videoUserInfo.isEmpty
+        ? const Center(child: CircularProgressIndicator())
+        : Column(
             children: [
               UserInfoRow(
                 videoUserInfo: _videoUserInfo,
@@ -413,7 +469,7 @@ class _VideoInfoViewState extends State<VideoInfoView> with AutomaticKeepAliveCl
             ],
           );
   }
-  
+
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
@@ -429,7 +485,6 @@ class UserInfoRow extends StatefulWidget {
 
 class _UserInfoRowState extends State<UserInfoRow> {
   bool ifFollow = false;
-
 
   void checkIfFollow(id) async {
     var response = await checkFollow(id);
@@ -735,7 +790,8 @@ class _VideoTitleAndInfoState extends State<VideoTitleAndInfo> {
               const SizedBox(
                 width: 10,
               ),
-              TimeComparisonScreen(dateTimeString: widget.videoInfo['createTime']),
+              TimeComparisonScreen(
+                  dateTimeString: widget.videoInfo['createTime']),
             ],
           ),
           const SizedBox(

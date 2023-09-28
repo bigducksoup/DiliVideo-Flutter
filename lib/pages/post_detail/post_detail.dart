@@ -104,6 +104,7 @@ class _PostDetailPageState extends State<PostDetailPage>
 
 
   void switchReplyMode(int mode, {String? name, String? targetId}){
+    //mode == 0 是回复动态,mode == 1 是回复评论
     if (mode == 0){
       setState(() {
         replyMode = mode;
@@ -119,11 +120,40 @@ class _PostDetailPageState extends State<PostDetailPage>
       });
     }
   }
+  
+  //点击输入框发送按钮后
+  void clickSendButton(String text)async{
+    //回复动态
+    if (replyMode == 0){
+      var response = await replyToPost(replyTargetId, text);
+      var res = jsonDecode(response.toString());
+      TextToast.showToast(res['msg']);
+      if(res['code']!=200)return;
+      roundedInputController.unfocus();
+      roundedInputController.clearText();
+
+      return;
+    }
+
+    //回复评论
+    if (replyMode == 1){
+      var response = await replyToPostComment(replyTargetId,replyTargetId,item['id'],text);
+      var res = jsonDecode(response.toString());
+      TextToast.showToast(res['msg']);
+      if(res['code']!=200)return;
+      roundedInputController.unfocus();
+      roundedInputController.clearText();
+    }
+
+
+  }
+  
   @override
   void initState() {
     super.initState();
     roundedInputController = RoundedInputController();
     item = Get.arguments;
+    switchReplyMode(0);
     initTabController();
     loadComment();
   }
@@ -211,6 +241,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                             postId: comments[index]['id'],
                             upId: comments[index]['userId'],
                             onClickContent: (content, commentId, userNickName) {
+                              //切换回复模式为回复评论
                               switchReplyMode(1,name: userNickName,targetId: commentId);
                             },
                             slot: ChildCommentListPreview(
@@ -249,7 +280,7 @@ class _PostDetailPageState extends State<PostDetailPage>
             width: double.infinity,
             height: 80,
             padding: const EdgeInsets.only(bottom: 20),
-            child: RoundedInput(roundedInputController: roundedInputController,hintText: bottomHint,),
+            child: RoundedInput(roundedInputController: roundedInputController,hintText: bottomHint,onClickSendBtn: clickSendButton,),
           )
         ],
       )),

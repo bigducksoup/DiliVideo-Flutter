@@ -80,3 +80,39 @@ Future likeAction(int type, String id) async {
   var response = dio.post('/main/action/like', data: {"targetType": type, "targetId": id});
   return response;
 }
+
+
+
+//reply to a post
+Future replyToPost(String postId,String content){
+  var response = dio.post('/main/post_comment/reply_to_post',data: {
+    "content":content,
+    "postId":postId
+  });
+
+  return response;
+}
+
+//reply to a comment below post
+Future replyToPostComment(String fatherId,String replyToId,String postId,String content){
+  var response = dio.post('/main/post_comment/reply_to_post_comment',data: {
+    "fatherId":fatherId,
+    "replyToId":replyToId,
+    "content":content,
+    "postId":postId
+  });
+
+  return response;
+
+}
+
+
+
+
+Future getPostInfoById (String postId) async {
+  var response = dio.get('/main/post_query/query_by_id', queryParameters: {
+    "postId": postId
+  });
+  return response;
+
+}
