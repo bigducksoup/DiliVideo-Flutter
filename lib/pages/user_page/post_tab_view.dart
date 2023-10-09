@@ -1,11 +1,9 @@
 import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
 
-import '../../component/img_grid.dart';
 import '../../component/post_item.dart';
 
 class Post extends StatefulWidget {

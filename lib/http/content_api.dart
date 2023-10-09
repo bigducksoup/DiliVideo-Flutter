@@ -61,6 +61,14 @@ Future getLatestRecommend(int page) async {
   return response;
 }
 
+//获取热门视频
+Future getHotVideos(int page) async {
+  var response = dio.get('/content/recommend/hot',queryParameters: {
+    "page":page
+  });
+  return response;
+}
+
 //获取播放链接
 Future getPlayUrl(String videoId) async {
   var response = dio.get('/content/video_info/get_playurl',queryParameters: {

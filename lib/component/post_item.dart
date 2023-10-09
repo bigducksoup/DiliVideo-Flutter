@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/component/child_module.dart';
 import 'package:dili_video/component/cover_in_post.dart';
 import 'package:dili_video/component/time_formatter.dart';
+import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/pages/post_detail/post_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -46,7 +47,7 @@ class PostItem extends StatefulWidget {
 }
 
 //单个动态样式
-class _PostItemState extends State<PostItem> {
+class _PostItemState extends State<PostItem> with AutomaticKeepAliveClientMixin{
   bool like = false;
 
   @override
@@ -59,27 +60,27 @@ class _PostItemState extends State<PostItem> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(
-              widget.item['module']['userNickname'],
+              widget.item['moduleVO']['userNickname'],
               widget.item['createTime'],
-              widget.item['module']['userAvatarUrl'],
+              widget.item['moduleVO']['userAvatarUrl'],
             ),
             const SizedBox(
-              height: 10,
+              height: 5,
             ),
             GestureDetector(
                 onTap: () {
-                  if (widget.item['module']['typeId'] == "1") {
+                  if (widget.item['moduleVO']['typeId'] == "1") {
                     return;
-                  } else if (widget.item['module']['typeId'] == "2") {
+                  } else if (widget.item['moduleVO']['typeId'] == "2") {
                     Get.to(const PostDetailPage(), arguments: widget.item);
                   }
                 },
-                child: _buildContent(context, widget.item['module'])),
+                child: _buildContent(context, widget.item['moduleVO'])),
             const SizedBox(
               height: 10,
             ),
             _buildBottom(widget.item['shareCount'], widget.item['commentCount'],
-                widget.item['likeCount'], widget.item['module']['typeId'],widget.item['id'])
+                widget.item['likeCount'], widget.item['moduleVO']['typeId'],widget.item['id'])
           ],
         ),
       ),
@@ -127,8 +128,8 @@ class _PostItemState extends State<PostItem> {
       //发布视频动态
       if (typeId == '1') {
         return CoverInPost(
-          videoInfoId: widget.item['module']['videoInfoId'],
-          postUserId: widget.item['module']['userId'],
+          videoInfoId: widget.item['moduleVO']['videoInfoId'],
+          postUserId: widget.item['moduleVO']['userId'],
         );
       }
 
@@ -143,8 +144,8 @@ class _PostItemState extends State<PostItem> {
       //转发视频动态
       if (typeId == '3') {
         return CoverInPost(
-          videoInfoId: widget.item['module']['videoInfoId'],
-          postUserId: widget.item['module']['userId'],
+          videoInfoId: widget.item['moduleVO']['videoInfoId'],
+          postUserId: widget.item['moduleVO']['userId'],
         );
       }
 
@@ -173,7 +174,7 @@ class _PostItemState extends State<PostItem> {
           ),
           Container(
             color: Colors.transparent,
-            height: 20,
+            height: 10,
             width: double.infinity,
           ),
           selector(module['typeId'])
@@ -206,7 +207,7 @@ class _PostItemState extends State<PostItem> {
         GestureDetector(
           onTap: () {
             if(typeId == '1'){
-              Get.toNamed('/video', arguments: widget.item['module']['videoInfoId']);
+              Get.toNamed('/video', arguments: widget.item['moduleVO']['videoInfoId']);
             }else{
               Get.to(const PostDetailPage(), arguments: widget.item);
             }
@@ -237,9 +238,11 @@ class _PostItemState extends State<PostItem> {
                     setState(() {
                       if (like) {
                         widget.item['likeCount']--;
+                        likeAction(0, widget.item['id']);
                       }
                       if (!like) {
                         widget.item['likeCount']++;
+                        likeAction(0, widget.item['id']);
                       }
                       like = !like;
                     });
@@ -261,4 +264,8 @@ class _PostItemState extends State<PostItem> {
       ],
     );
   }
+  
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

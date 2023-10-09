@@ -20,9 +20,9 @@ class ModuleVO {
 
   String typeId;
 
-  String videoInfoId;
+  String? videoInfoId;
 
-  String childPostId;
+  String? childPostId;
 
   List<String>? imgs;
 
@@ -36,8 +36,8 @@ class ModuleVO {
     required this.userNickname,
     required this.description,
     required this.typeId,
-    required this.videoInfoId,
-    required this.childPostId,
+    this.videoInfoId,
+    this.childPostId,
     this.imgs});
 
   factory ModuleVO.fromJson(Map<String, dynamic> json) => _$ModuleVOFromJson(json);

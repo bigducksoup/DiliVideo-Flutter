@@ -9,8 +9,12 @@ import 'package:dili_video/component/time_formatter.dart';
 import 'package:dili_video/controller/RoundedInputController.dart';
 import 'package:dili_video/entity/child_comment_preview.dart';
 import 'package:dili_video/entity/comment_params.dart';
+import 'package:dili_video/entity/module_vo.dart';
+import 'package:dili_video/entity/post_vo.dart';
 import 'package:dili_video/http/main_api.dart';
+import 'package:dili_video/pages/post_detail/child/bottom_reply_sheet.dart';
 import 'package:dili_video/services/router.dart';
+import 'package:dili_video/theme/colors.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -56,7 +60,7 @@ class _PostDetailPageState extends State<PostDetailPage>
   //           "shareCount": 0,
   //           "createTime": "2023-05-10T09:14:53.000+00:00",
   //           "status": 1,
-  //           "module": {
+  //           "moduleVO": {
   //               "id": "1ae73532-f481-4ec3-8a70-c37c8e96a5b9",
   //               "userId": "1",
   //               "userAvatarUrl": "http://127.0.0.1:9000/img/wallhaven-m3pex1.png",
@@ -102,16 +106,15 @@ class _PostDetailPageState extends State<PostDetailPage>
     });
   }
 
-
-  void switchReplyMode(int mode, {String? name, String? targetId}){
+  void switchReplyMode(int mode, {String? name, String? targetId}) {
     //mode == 0 是回复动态,mode == 1 是回复评论
-    if (mode == 0){
+    if (mode == 0) {
       setState(() {
         replyMode = mode;
         bottomHint = "#说点什么吧";
         replyTargetId = item['id'];
       });
-    }else if(mode == 1 ){
+    } else if (mode == 1) {
       setState(() {
         replyMode = mode;
         bottomHint = "回复@$name";
@@ -120,15 +123,15 @@ class _PostDetailPageState extends State<PostDetailPage>
       });
     }
   }
-  
+
   //点击输入框发送按钮后
-  void clickSendButton(String text)async{
+  void clickSendButton(String text) async {
     //回复动态
-    if (replyMode == 0){
+    if (replyMode == 0) {
       var response = await replyToPost(replyTargetId, text);
       var res = jsonDecode(response.toString());
       TextToast.showToast(res['msg']);
-      if(res['code']!=200)return;
+      if (res['code'] != 200) return;
       roundedInputController.unfocus();
       roundedInputController.clearText();
 
@@ -136,33 +139,49 @@ class _PostDetailPageState extends State<PostDetailPage>
     }
 
     //回复评论
-    if (replyMode == 1){
-      var response = await replyToPostComment(replyTargetId,replyTargetId,item['id'],text);
+    if (replyMode == 1) {
+      var response = await replyToPostComment(
+          replyTargetId, replyTargetId, item['id'], text);
       var res = jsonDecode(response.toString());
       TextToast.showToast(res['msg']);
-      if(res['code']!=200)return;
+      if (res['code'] != 200) return;
       roundedInputController.unfocus();
       roundedInputController.clearText();
     }
-
-
   }
-  
+
   @override
   void initState() {
     super.initState();
     roundedInputController = RoundedInputController();
-    item = Get.arguments;
+
+    //传入Post.toJson的情况
+    if (Get.arguments['moduleVO'].runtimeType == ModuleVO) {
+      Map<String, dynamic> postVO = Get.arguments;
+      Map<String, dynamic> moduleVO =
+          (Get.arguments['moduleVO'] as ModuleVO).toJson();
+
+      postVO['moduleVO'] = moduleVO;
+      item = postVO;
+    } else {
+      //传入dynamic的情况
+      item = Get.arguments;
+    }
     switchReplyMode(0);
     initTabController();
     loadComment();
   }
 
-
   @override
   void dispose() {
     roundedInputController.dispose();
+    tabController.dispose();
     super.dispose();
+  }
+
+  void _showBottomSheetReply(String postCommentId) {
+    //TODO show more comments
+     Get.bottomSheet(PostCommentReplySheet(postCommentId: postCommentId, postId: item['id'], userId: item['moduleVO']['userId']), backgroundColor: maindarkcolor);
   }
 
   @override
@@ -225,62 +244,73 @@ class _PostDetailPageState extends State<PostDetailPage>
                   ),
                   curTabIndex == 0
                       ? SliverList(
-                          delegate: SliverChildBuilderDelegate((context, index) {
+                          delegate:
+                              SliverChildBuilderDelegate((context, index) {
                           return ListTile(title: Text('Item $index'));
                         }, childCount: 30))
                       : SliverList(
-                          delegate: SliverChildBuilderDelegate((context, index) {
+                          delegate: SliverChildBuilderDelegate(
+                              (context, index) {
                           //build childPreviewComment list for ChildCommentListPreview
                           List<ChildPreviewComment> list = [];
-                          for (int i = 0;i < comments[index]['child'].length;i++) {
-                            Map<String, dynamic> item = comments[index]['child'][i];
+                          for (int i = 0;
+                              i < comments[index]['child'].length;
+                              i++) {
+                            Map<String, dynamic> item =
+                                comments[index]['child'][i];
                             list.add(ChildPreviewComment.fromJson(item));
                           }
+
                           return PostCommentItem(
-                            params: CommentDisplayParams.fromJson(comments[index]),
+                            params:
+                                CommentDisplayParams.fromJson(comments[index]),
                             postId: comments[index]['id'],
                             upId: comments[index]['userId'],
                             onClickContent: (content, commentId, userNickName) {
                               //切换回复模式为回复评论
-                              switchReplyMode(1,name: userNickName,targetId: commentId);
+                              switchReplyMode(1,
+                                  name: userNickName, targetId: commentId);
                             },
                             slot: ChildCommentListPreview(
                               list: list,
                               onClickUsername: (userId, userName) {
                                 //judge if current post owner is comment owner
                                 //if so not route to user page because it can cause stack over flow
-                                if (item['module']['userId'] != userId) {
+                                if (item['moduleVO']['userId'] != userId) {
                                   routeToUserPage(userId);
                                 }
                               },
-                              clickSeeMore: () {
-                                //TODO show more comments
-                                print("show more comments");
+                              clickSeeMore: (){
+                                _showBottomSheetReply(comments[index]['id']);
                               },
                             ),
                             onClickAvatarAndName: (userId, userAvatar) {
                               //judge if current post owner is comment owner
                               //if so not route to user page because it can cause stack over flow
-                              if (item['module']['userId'] != userId) {
+                              if (item['moduleVO']['userId'] != userId) {
                                 routeToUserPage(userId);
                               }
                             },
                           );
-                        }, childCount: comments.length)),
+                        },
+                              childCount: comments.length,
+                              addAutomaticKeepAlives: true)),
                 ],
               ),
             ),
           ),
-    
+
           //bottom input Container
           Container(
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide())
-            ),
+            decoration: const BoxDecoration(border: Border(top: BorderSide())),
             width: double.infinity,
             height: 80,
             padding: const EdgeInsets.only(bottom: 20),
-            child: RoundedInput(roundedInputController: roundedInputController,hintText: bottomHint,onClickSendBtn: clickSendButton,),
+            child: RoundedInput(
+              roundedInputController: roundedInputController,
+              hintText: bottomHint,
+              onClickSendBtn: clickSendButton,
+            ),
           )
         ],
       )),
@@ -356,14 +386,14 @@ class __DetailState extends State<_Detail> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(
-              widget.item['module']['userNickname'],
+              widget.item['moduleVO']['userNickname'],
               widget.item['createTime'],
-              widget.item['module']['userAvatarUrl']),
+              widget.item['moduleVO']['userAvatarUrl']),
           const SizedBox(
             height: 10,
           ),
-          _buildContent(widget.item['module']['description'],
-              widget.item['module']['imgs'])
+          _buildContent(widget.item['moduleVO']['description'],
+              widget.item['moduleVO']['imgs'])
         ],
       ),
     );

@@ -14,7 +14,7 @@ PostVO _$PostVOFromJson(Map<String, dynamic> json) => PostVO(
       commentCount: json['commentCount'] as int,
       shareCount: json['shareCount'] as int,
       createTime: json['createTime'] as String,
-      status: json['status'] as String,
+      status: json['status'] as int,
       moduleVO: ModuleVO.fromJson(json['moduleVO'] as Map<String, dynamic>),
     );
 

@@ -32,6 +32,9 @@ class _LoginState extends State<Login> {
     return MaterialApp(
       theme: ThemeData.dark(),
       home: Scaffold(
+        floatingActionButton: FloatingActionButton(onPressed: (){
+          Get.toNamed("/indexPage");
+        },child: const Icon(Icons.refresh),),
         appBar: AppBar(
           title: const Text("账号密码登录"),
         ),

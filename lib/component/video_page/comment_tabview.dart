@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:dili_video/component/RoundedInput.dart';
 import 'package:dili_video/component/video_page/%20comment.dart';
+import 'package:dili_video/controller/RoundedInputController.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class CommentView extends StatefulWidget {
   const CommentView({super.key, required this.videoInfoId});
@@ -16,23 +19,33 @@ class CommentView extends StatefulWidget {
   State<CommentView> createState() => _CommentViewState();
 }
 
-class _CommentViewState extends State<CommentView> with AutomaticKeepAliveClientMixin {
-
-  TextEditingController commentController = Get.put<TextEditingController>(TextEditingController());
-
-  FocusNode commentInputFocusNode = Get.put(FocusNode());
-
+class _CommentViewState extends State<CommentView>
+    with AutomaticKeepAliveClientMixin {
   final ScrollController _commentListScrollController = ScrollController();
+
+  RoundedInputController roundedInputController = RoundedInputController();
+
+  String bottomHintText = "留下你的想法";
 
   int page = 1;
   int mode = 1;
   List commentList = [];
   String replyToid = "";
 
-
-
-  void setReplyToid(String id) {
+  void setReplyToid(String id,String nickName) {
     replyToid = id;
+    setState(() {
+      bottomHintText = "回复@$nickName:";
+    });
+    roundedInputController.focus();
+  }
+
+  void resetReplyInfo() {
+    replyToid = "";
+    setState(() {
+      bottomHintText = "留下你的想法";
+    });
+    roundedInputController.unfocus();
   }
 
   void send(String value) async {
@@ -52,29 +65,30 @@ class _CommentViewState extends State<CommentView> with AutomaticKeepAliveClient
       TextToast.showToast(res['msg']);
       if (res['code'] != 200) return;
       //toast
-    }else{
+    } else {
       //发送回复请求
       var response = await replyComment(value, replyToid, replyToid);
       var res = jsonDecode(response.toString());
       TextToast.showToast(res['msg']);
       if (res['code'] != 200) return;
       //toast
-      
     }
-    commentInputFocusNode.unfocus();
-    commentController.clear();
+
+    roundedInputController.clearText();
+    roundedInputController.unfocus();
+
   }
 
   void getComments() async {
     var response = await getComment(page, mode, widget.videoInfoId);
     var res = jsonDecode(response.toString());
 
-    if(res['code']!=200){
+    if (res['code'] != 200) {
       TextToast.showToast(res['msg']);
       return;
     }
 
-    if((res['data'] as List).isEmpty){
+    if ((res['data'] as List).isEmpty) {
       return;
     }
 
@@ -84,18 +98,11 @@ class _CommentViewState extends State<CommentView> with AutomaticKeepAliveClient
     page++;
   }
 
-  void addFocusNodeListener() {
-    commentInputFocusNode.addListener(() {
-      if (!commentInputFocusNode.hasFocus) {
-        setReplyToid("");
-      }
-    });
-  }
-
-
-  void addCommentScrollToBottomListener(){
+  void addCommentScrollToBottomListener() {
     _commentListScrollController.addListener(() {
-      if(_commentListScrollController.offset >= _commentListScrollController.position.maxScrollExtent && !_commentListScrollController.position.outOfRange){
+      if (_commentListScrollController.offset >=
+              _commentListScrollController.position.maxScrollExtent &&
+          !_commentListScrollController.position.outOfRange) {
         getComments();
       }
     });
@@ -104,15 +111,14 @@ class _CommentViewState extends State<CommentView> with AutomaticKeepAliveClient
   @override
   void initState() {
     getComments();
-    addFocusNodeListener();
     addCommentScrollToBottomListener();
     super.initState();
   }
 
   @override
   void dispose() {
-    commentController.dispose();
-    commentInputFocusNode.dispose();
+    roundedInputController.dispose();
+    _commentListScrollController.dispose();
     super.dispose();
   }
 
@@ -120,20 +126,14 @@ class _CommentViewState extends State<CommentView> with AutomaticKeepAliveClient
   Widget build(BuildContext context) {
     super.build(context);
     return GestureDetector(
-      onTap: () {
-        if (commentInputFocusNode.hasFocus) {
-          commentInputFocusNode.unfocus();
-        } else {
-          return;
-        }
-      },
+      onTap: resetReplyInfo,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
-                page=1;
+                page = 1;
                 commentList.clear();
                 getComments();
               },
@@ -161,60 +161,21 @@ class _CommentViewState extends State<CommentView> with AutomaticKeepAliveClient
           ///底部评论输入框
           ///
           Container(
-            height: 80,
-            width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-            decoration: const BoxDecoration(
-                border:
-                    Border(top: BorderSide(color: Colors.grey, width: 0.2))),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                        child: Container(
-                            height: 40,
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade700,
-                                borderRadius: BorderRadius.circular(50)),
-                            child: Center(
-                              child: Container(
-                                height: 40,
-                                child: TextField(
-                                  maxLines: 1,
-                                    focusNode: commentInputFocusNode,
-                                    controller: commentController,
-                                    decoration: const InputDecoration(
-                                      border: InputBorder.none,
-                                      contentPadding: EdgeInsets.all(0)
-                                    ),
-                                    cursorColor: Colors.pink,
-                                    onSubmitted: send,
-                                    
-                                    ),
-                              ),
-                            ))),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    GestureDetector(
-                        onTap: () {
-                          send(commentController.text);
-                        },
-                        child: Icon(
-                          Icons.send,
-                          size: 30,
-                          color: Colors.pink.shade300,
-                        ))
-                  ],
-                ),
-              ],
-            ),
-          )
+              height: 80,
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
+              decoration: const BoxDecoration(
+                  border:
+                      Border(top: BorderSide(color: Colors.grey, width: 0.2))),
+              child: RoundedInput(
+                roundedInputController: roundedInputController,
+                hintText: bottomHintText,
+                textColor: Colors.white,
+                hintColor: Colors.white,
+                onClickSendBtn: (text) {
+                  send(text);
+                },
+              ))
         ],
       ),
     );

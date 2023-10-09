@@ -4,6 +4,7 @@ import 'package:dili_video/pages/publish/publish.dart';
 import 'package:dili_video/pages/register/register.dart';
 import 'package:dili_video/pages/search/search.dart';
 import 'package:dili_video/pages/setting/setting_page.dart';
+import 'package:dili_video/services/responseHandler.dart';
 import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/pages/user_page/user_page.dart';
 import 'package:dili_video/utils/shared_preference.dart';
@@ -73,16 +74,21 @@ class _IndexPageState extends State<IndexPage> {
   ///合法进入首页，
   ///不合法跳转登录页
   checktoken() async {
+    
     var token = await LocalStorge.getValue("token", "".runtimeType);
     if (token != null) {
+      Get.dialog(Container(height: double.infinity,width: double.infinity,color: Colors.black,child: Center(child: CircularProgressIndicator())),barrierDismissible: false);
       var res = await checklogin();
-
-      var response = jsonDecode(res.toString());
-
-      if (response['code'] == 200) {
-        Map<String, dynamic> authmap = response['data'];
-        auth_state.init(authmap);
-      } else {
+      try{
+        Map<String,dynamic> response =  handleResponse(res);
+        if(response['code']==200){
+          Map<String, dynamic> authmap = response['data'];
+          auth_state.init(authmap);
+          Get.back();
+        }else{
+          Get.offAllNamed('/login');
+        }
+      }catch(e){
         Get.offAllNamed('/login');
       }
     } else {
@@ -92,9 +98,10 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   void initState() {
-     checktoken();
+    
     super.initState();
-        views.add(const Home());
+    checktoken();
+    views.add(const Home());
     views.add(const Activity());
     views.add(const Mine());
   }
@@ -102,11 +109,7 @@ class _IndexPageState extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Color(0xFF18181a),
-          ),
-        ),
+        theme: ThemeData.dark(useMaterial3: true),
         home: Scaffold(
           body: Obx(() => IndexedStack(index: controller.currentIndex.value,children: views,)),
           bottomNavigationBar: Theme(

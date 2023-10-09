@@ -43,10 +43,9 @@ class Comment extends StatelessWidget {
 
   final List children;
 
-  final Function(String id) setReplyToid;
+  final Function(String id,String nickName) setReplyToid;
 
 
-  FocusNode commentInputFocusNode = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -102,12 +101,8 @@ class Comment extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(0, 0, 15, 10),
             child: GestureDetector(
               onTap: () {
-                if (commentInputFocusNode.hasFocus) {
-                  commentInputFocusNode.unfocus();
-                  return;
-                }
-                setReplyToid(id);
-                FocusScope.of(context).requestFocus(commentInputFocusNode);
+                setReplyToid(id,userName);
+
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,

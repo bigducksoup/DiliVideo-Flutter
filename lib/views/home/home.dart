@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/views/home/child/hot_list.dart';
 import 'package:dili_video/views/home/child/recommand_list.dart';
 import 'package:dili_video/controller/index_page_controller.dart';
 import 'package:dili_video/states/auth_state.dart';
@@ -72,7 +73,7 @@ class _HomeState extends State<Home>
           children: const [
             test(),
             RecommandList(),
-            FlutterLogo()
+            HotPage()
           ],
         ),
       ),

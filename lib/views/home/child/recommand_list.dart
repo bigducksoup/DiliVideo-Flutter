@@ -1,7 +1,7 @@
-
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/services/responseHandler.dart';
 import 'package:dili_video/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -16,19 +16,18 @@ class RecommandList extends StatefulWidget {
   State<RecommandList> createState() => _RecommandListState();
 }
 
-class _RecommandListState extends State<RecommandList> with AutomaticKeepAliveClientMixin{
-  final _scrollController = ScrollController();
-
+class _RecommandListState extends State<RecommandList>
+    with AutomaticKeepAliveClientMixin {
   List recommends = [];
   int page = 1;
   bool isLoading = false;
+
+  bool init = false;
 
   @override
   void initState() {
     super.initState();
     getRecommend();
-
-    
   }
 
   @override
@@ -38,60 +37,89 @@ class _RecommandListState extends State<RecommandList> with AutomaticKeepAliveCl
 
 //  获取推荐
   void getRecommend() async {
-    isLoading = true;
-    var response = await getLatestRecommend(page);
-    var responseresult = jsonDecode(response.toString());
-    List data = responseresult['data'] ?? [] ;
+    if (isLoading) return;
 
-    if( data.isEmpty ){
+    isLoading = true;
+
+    try {
+      var response = await getLatestRecommend(page);
+      Map<String, dynamic> res = handleResponse(response);
+
+      if (res['code'] != 200) {
+        resetState();
+        return;
+      }
+
+      List data = res['data'];
+      if (data.isEmpty) {
+        isLoading = false;
+        init = true;
+        return;
+      }
+      recommends.addAll(data);
+      page = page + 1;
+      setState(() {});
       isLoading = false;
-      return;
+      init = true;
+    } catch (e) {
+      resetState();
     }
-    recommends.addAll(data);
-    page = page+1;
-    setState(() {
-    });
+  }
+
+  void resetState() {
+    page = 1;
     isLoading = false;
+    setState(() {
+      recommends.clear();
+    });
+    getRecommend();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: (notification)  {
-          if(notification.metrics.pixels==notification.metrics.maxScrollExtent){
-            if(isLoading==false){
-              getRecommend();
-            }else{
-              return false;
-            }
-          }
-          return true;
-        },
-        child: ListView.builder(
-          shrinkWrap: true,
-          // controller: _scrollController,
-          // physics: const NeverScrollableScrollPhysics(),
-          // shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return TwoVideoInOneRow(
-              item1: recommends[index * 2],
-              item2: recommends[index * 2 + 1],
-            );
-          },
-          itemCount: (recommends.length / 2 - 0.1).round(),
-        ),
-      ),
-    );
+        context: context,
+        removeTop: true,
+        child: (init && !isLoading)
+            ? NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  if (notification.metrics.pixels ==
+                      notification.metrics.maxScrollExtent) {
+                    if (isLoading == false) {
+                      getRecommend();
+                    } else {
+                      return false;
+                    }
+                  }
+                  return true;
+                },
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    resetState();
+                  },
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    // controller: _scrollController,
+                    // physics: const NeverScrollableScrollPhysics(),
+                    // shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return TwoVideoInOneRow(
+                        item1: recommends[index * 2],
+                        item2: recommends[index * 2 + 1],
+                      );
+                    },
+                    itemCount: (recommends.length / 2 - 0.1).round(),
+                  ),
+                ),
+              )
+            : const Center(
+                child: CircularProgressIndicator(),
+              ));
   }
-  
+
   @override
-
   bool get wantKeepAlive => true;
-
 }
 
 class TwoVideoInOneRow extends StatelessWidget {
@@ -138,7 +166,8 @@ class VideoItem extends StatelessWidget {
       required this.plcount,
       required this.authorname,
       required this.title,
-      required this.id, this.item});
+      required this.id,
+      this.item});
 
   final String id;
   final String coverurl;
@@ -154,7 +183,7 @@ class VideoItem extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
       child: GestureDetector(
         onTap: () {
-          Get.toNamed('/video', arguments:item );
+          Get.toNamed('/video', arguments: item);
         },
         child: Container(
           clipBehavior: Clip.hardEdge,
@@ -180,9 +209,10 @@ class VideoItem extends StatelessWidget {
                           height: width * 0.7,
                           child: CachedNetworkImage(
                             imageUrl: coverurl,
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                             fit: BoxFit.cover,
-                            )),
+                          )),
                     ),
                     Positioned(
                         left: 5,

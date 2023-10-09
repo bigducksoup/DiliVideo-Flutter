@@ -1,13 +1,14 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/http/auth_api.dart';
 import 'package:dili_video/pages/user_page/post_tab_view.dart';
 import 'package:dili_video/pages/user_page/work_tab_view.dart';
+import 'package:dili_video/services/responseHandler.dart';
 import 'package:dili_video/services/userOperation.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -81,130 +82,121 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
     setUserInfo(res['data']);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: NestedScrollView(headerSliverBuilder:(context, innerBoxIsScrolled) {
-        return [
-          _buildSliverAppBar()
-        ];
-      }, body: TabBarView(
-              controller: tabController,
-              children: [
-                Index(),
-                Post(userId: _userId,),
-                Works(
-                  userId: _userId,
-                )
-              ],
-            ),),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [_buildSliverAppBar()];
+        },
+        body: TabBarView(
+          controller: tabController,
+          children: [
+            Index(),
+            Post(
+              userId: _userId,
+            ),
+            Works(
+              userId: _userId,
+            )
+          ],
+        ),
+      ),
     );
   }
 
-
-
-
-
-  Widget _buildSliverAppBar(){
+  Widget _buildSliverAppBar() {
     return SliverAppBar(
-            toolbarHeight: 50,
-            expandedHeight: 280,
-            floating: true,
-            pinned: true,
-            snap: false,
-            flexibleSpace: FlexibleSpaceBar(
-                collapseMode: CollapseMode.pin,
-                background: Column(
+      toolbarHeight: 50,
+      expandedHeight: 300,
+      floating: true,
+      pinned: true,
+      snap: true,
+      flexibleSpace: FlexibleSpaceBar(
+          collapseMode: CollapseMode.pin,
+          background: Column(
+            children: [
+              Image.network(
+                  "https://i0.hdslb.com/bfs/archive/a349e5844a068d9767d699ab4fdbaa16030af585.png",
+                  fit: BoxFit.scaleDown),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.network(
-                        "https://i0.hdslb.com/bfs/archive/a349e5844a068d9767d699ab4fdbaa16030af585.png",
-                        fit: BoxFit.scaleDown),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                image: avatarUrl == ""
-                                    ? null
-                                    : DecorationImage(
-                                        image: NetworkImage(avatarUrl),
-                                        fit: BoxFit.cover)),
-                          ),
-                          CountInfo(
-                              followCount: followCount,
-                              fansCount: fansCount,
-                              userId: _userId)
-                        ],
-                      ),
+                    Container(
+                      width: 100,
+                      height: 100,
+                      clipBehavior: Clip.hardEdge,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(
+                              width: 2, color: Colors.pink.shade400)),
+                      child: 
+                      avatarUrl.isEmpty?
+                      const CircularProgressIndicator():
+                      CircleAvatar(
+                          backgroundImage:
+                              CachedNetworkImageProvider(avatarUrl)
+                              ),
                     ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                                width: 100,
-                                child: Center(
-                                    child: Text(
-                                  nickName,
-                                  style: const TextStyle(
-                                      fontSize: 18, fontWeight: FontWeight.w600),
-                                ))),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(summary),
-                          ],
-                        ),
-                      ),
-                    ),
+                    CountInfo(
+                        followCount: followCount,
+                        fansCount: fansCount,
+                        userId: _userId)
                   ],
-                )),
-            bottom: PreferredSize(
-              preferredSize: const Size(double.infinity, 50),
-              child: _buildTabbar()
-            ),
-          );
-  }
-
-
-
-
-  Widget _buildTabbar(){
-    return Container(
-                padding: const EdgeInsets.fromLTRB(5, 12, 5, 12),
+                ),
+              ),
+              SizedBox(
                 width: double.infinity,
-                decoration: const BoxDecoration(
-                  border: Border(top: BorderSide(width: 0.3,color: Colors.grey))
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                          width: 100,
+                          child: Center(
+                              child: Text(
+                            nickName,
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ))),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(summary),
+                    ],
+                  ),
                 ),
-                child: TabBar(
-                  tabs: const [Text("主页"), Text("动态"), Text("投稿")],
-                  controller: tabController,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  indicatorColor: Colors.pink.shade300,
-                  labelColor: Colors.pink.shade300,
-                  unselectedLabelColor: Colors.white,
-                ),
-              );
+              ),
+            ],
+          )),
+      bottom: PreferredSize(
+          preferredSize: const Size(double.infinity, 50),
+          child: _buildTabbar()),
+    );
   }
 
-
-
+  Widget _buildTabbar() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(5, 12, 5, 12),
+      width: double.infinity,
+      decoration: const BoxDecoration(
+          border: Border(top: BorderSide(width: 0.3, color: Colors.grey))),
+      child: TabBar(
+        tabs: const [Text("主页"), Text("动态"), Text("投稿")],
+        controller: tabController,
+        indicatorSize: TabBarIndicatorSize.label,
+        indicatorColor: Colors.pink.shade300,
+        labelColor: Colors.pink.shade300,
+        unselectedLabelColor: Colors.white,
+      ),
+    );
+  }
 }
-
-
-
-
 
 class CountInfo extends StatefulWidget {
   const CountInfo(
@@ -228,11 +220,15 @@ class _CountInfoState extends State<CountInfo> {
 
   void checkIfFollow(id) async {
     var response = await checkFollow(id);
-    var res = jsonDecode(response.toString());
+    try {
+      Map<String, dynamic> res = handleResponse(response);
 
-    setState(() {
-      ifFollow = res['data'];
-    });
+      if (res['code'] == 200) {
+        setState(() {
+          ifFollow = res['data'];
+        });
+      }
+    } catch (e){}
   }
 
   @override
@@ -309,13 +305,18 @@ class Index extends StatefulWidget {
 class _IndexState extends State<Index> {
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(itemBuilder:(context, index) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(width: double.infinity,height: 200,color: Colors.amber,),
-      );
-    },itemCount: 200,);
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            width: double.infinity,
+            height: 200,
+            color: Colors.amber,
+          ),
+        );
+      },
+      itemCount: 200,
+    );
   }
 }
-
-

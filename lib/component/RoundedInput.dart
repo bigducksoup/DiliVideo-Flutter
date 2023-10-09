@@ -2,7 +2,7 @@ import 'package:dili_video/controller/RoundedInputController.dart';
 import 'package:flutter/material.dart';
 
 class RoundedInput extends StatefulWidget {
-  const RoundedInput({Key? key, required this.roundedInputController, required this.hintText, this.onClickSendBtn, this.fillColor, this.borderColor, this.textColor, this.iconColor, this.btnIcon})
+  const RoundedInput({Key? key, required this.roundedInputController, required this.hintText, this.onClickSendBtn, this.fillColor, this.borderColor, this.textColor, this.iconColor, this.btnIcon, this.hintColor})
       : super(key: key);
 
   final RoundedInputController roundedInputController;
@@ -19,7 +19,11 @@ class RoundedInput extends StatefulWidget {
 
   final Color? iconColor;
 
+  final Color? hintColor;
+
   final IconData? btnIcon;
+
+  
 
   @override
   State<RoundedInput> createState() => _RoundedInputState();
@@ -51,6 +55,7 @@ class _RoundedInputState extends State<RoundedInput> {
                           contentPadding: const EdgeInsets.all(0),
                           isCollapsed: true,
                           hintText: widget.hintText,
+                          hintStyle: TextStyle(color: widget.hintColor)
                           ),
                           cursorColor: Colors.pink.shade500,
                           

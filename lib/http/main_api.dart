@@ -36,9 +36,9 @@ Future getReply(String fatherCommentId) async {
   return response;
 }
 
-Future getPostsByUserId(String userId, int page) async {
+Future getPostsByUserId(String userId, int page, {bool? video_only}) async {
   var response = dio.get('/main/post_query/query_by_userId',
-      queryParameters: {"userId": userId, "page": page});
+      queryParameters: {"userId": userId, "page": page ,"video_only":video_only ?? false});
   return response;
 }
 
@@ -71,6 +71,16 @@ Future getPostComment(int page, String postId, {bool orderByTime = false}) {
     "orderByTime": orderByTime
   });
   return response;
+}
+
+
+Future getPostCommentReply(int page,String commentId,{int pageSize=20,bool orderByTime = false,CancelToken? cancelToken}){
+  return dio.get('/main/post_comment/get_comment_reply',queryParameters: {
+    "page":page,
+    "pageSize":pageSize,
+    "commentId":commentId,
+    "orderByTime":orderByTime
+  },cancelToken: cancelToken);
 }
 
 
@@ -113,6 +123,21 @@ Future getPostInfoById (String postId) async {
   var response = dio.get('/main/post_query/query_by_id', queryParameters: {
     "postId": postId
   });
+  return response;
+
+}
+
+
+
+
+Future getPostByFollows(int page,int pageSize,{bool? video_only,CancelToken? cancelToken}){
+
+  var response = dio.get('/main/post_query/query_by_follow',queryParameters: {
+    "page":page,
+    "pageSize":pageSize,
+    "video_only": video_only?? false
+  });
+
   return response;
 
 }

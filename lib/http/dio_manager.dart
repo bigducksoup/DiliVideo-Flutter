@@ -8,7 +8,8 @@ import '../utils/shared_preference.dart';
 final dio = Dio();
 
 void initDio() {
-  dio.options.baseUrl = 'https://302bee35-6bf9-4d5d-a691-98241ac9015b.mock.pstmn.io';
+  // dio.options.baseUrl = 'https://302bee35-6bf9-4d5d-a691-98241ac9015b.mock.pstmn.io';
+  dio.options.baseUrl = 'http://127.0.0.1:8084';
   // dio.options.connectTimeout = const Duration(seconds: 10);
   // dio.options.receiveTimeout = const Duration(seconds: 10);
 
@@ -36,14 +37,6 @@ void initDio() {
         return handler.next(e);
       },
       onError: (e, handler) async{
-
-          get_pack.Get.defaultDialog(
-            title: "ops!",
-            middleText: "请求出错了 o.o!",
-            backgroundColor: Colors.pink.shade300);
-
-
-
         return handler.next(e);
       },
     ),

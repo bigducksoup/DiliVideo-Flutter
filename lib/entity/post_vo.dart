@@ -22,7 +22,7 @@ class PostVO {
 
   String createTime;
 
-  String status;
+  int status;
 
   ModuleVO moduleVO;
 

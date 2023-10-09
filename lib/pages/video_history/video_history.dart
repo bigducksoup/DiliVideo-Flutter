@@ -84,6 +84,7 @@ class _VideoHistoryPageState extends State<VideoHistoryPage> {
     addScrollToBottomListener();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

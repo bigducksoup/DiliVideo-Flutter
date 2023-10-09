@@ -14,8 +14,8 @@ ModuleVO _$ModuleVOFromJson(Map<String, dynamic> json) => ModuleVO(
       userNickname: json['userNickname'] as String,
       description: json['description'] as String,
       typeId: json['typeId'] as String,
-      videoInfoId: json['videoInfoId'] as String,
-      childPostId: json['childPostId'] as String,
+      videoInfoId: json['videoInfoId'] as String?,
+      childPostId: json['childPostId'] as String?,
       imgs: (json['imgs'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
 

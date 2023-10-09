@@ -19,8 +19,8 @@ Future loginbyemail(String email, String password, int timestamp, String ip) asy
 
 
 ///check if token is valid
-Future checklogin() async {
-  var response = dio.get('/auth/login/check_login');
+Future checklogin({CancelToken? cancelToken}) async {
+  var response = dio.get('/auth/login/check_login',cancelToken: cancelToken);
   return response;
 }
 
