@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/component/tags.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -93,10 +94,15 @@ class _UserInfoBoxState extends State<UserInfoBox> {
                     const SizedBox(
                       width: 15,
                     ),
-                    Icon(
-                      Icons.edit_outlined,
-                      color: textwhitecolor,
-                      size: 14,
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed('/user_info_manage');
+                      },
+                      child: Icon(
+                        Icons.edit_outlined,
+                        color: textwhitecolor,
+                        size: 14,
+                      ),
                     )
                   ],
                 ),
@@ -104,22 +110,8 @@ class _UserInfoBoxState extends State<UserInfoBox> {
                   height: 5,
                 ),
                 Row(
-                  children: [
-                    Container(
-                      height: 20,
-                      width: 55,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.pink, width: 1),
-                          borderRadius: BorderRadius.circular(2)),
-                      child: const Center(
-                          child: Text(
-                        "正式会员",
-                        style: TextStyle(
-                            color: Colors.pink,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700),
-                      )),
-                    )
+                  children: const [
+                    VIPTag()
                   ],
                 ),
                 const SizedBox(

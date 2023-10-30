@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:dili_video/constant/argument_type_constant.dart';
+import 'package:dili_video/entity/route_argument.dart';
 import 'package:dili_video/http/content_api.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +74,7 @@ class _CoverInPostState extends State<CoverInPost> with AutomaticKeepAliveClient
     super.build(context);
     return load? GestureDetector(
       onTap: () {
-        Get.toNamed('/video', arguments:videoInfo );
+        Get.toNamed('/video', arguments: RouteArgument(TYPE_VIDEO_ITEM, videoInfo) );
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

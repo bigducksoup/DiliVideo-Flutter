@@ -4,6 +4,8 @@ import 'package:dili_video/pages/publish/publish.dart';
 import 'package:dili_video/pages/register/register.dart';
 import 'package:dili_video/pages/search/search.dart';
 import 'package:dili_video/pages/setting/setting_page.dart';
+import 'package:dili_video/pages/user_info/user_info.dart';
+import 'package:dili_video/pages/video_page/video_page_remake.dart';
 import 'package:dili_video/services/responseHandler.dart';
 import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/pages/user_page/user_page.dart';
@@ -42,14 +44,15 @@ void main() {
       GetPage(name: '/indexPage', page: () => const IndexPage(),transition: Transition.fade),
       GetPage(name: '/login', page: () => const Login()),
       GetPage(name: '/publish', page: () => const PublishPage()),
-      GetPage(name: '/video', page: ()=>const VideoPage()),
+      GetPage(name: '/video', page: ()=>const VideoPageRemake()),
       GetPage(name: '/video_manager', page: ()=>const VideoManager()),
       GetPage(name: '/videoItem_manage', page: ()=>const VideoItemManage()),
       GetPage(name: '/user_info', page: ()=>const UserPage()),
       GetPage(name: '/setting', page: ()=>const SettingPage()),
       GetPage(name: '/register', page: ()=>const RegisterPage()),
       GetPage(name: '/video_history', page: ()=> const VideoHistoryPage()),
-      GetPage(name: '/search', page: ()=>const SearchPage(),transition: Transition.fade, )
+      GetPage(name: '/search', page: ()=>const SearchPage(),transition: Transition.fade,),
+      GetPage(name: '/user_info_manage', page: ()=>const UserInfoManagePage())
     ],
   ));
   });

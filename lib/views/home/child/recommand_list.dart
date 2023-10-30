@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dili_video/constant/argument_type_constant.dart';
+import 'package:dili_video/entity/route_argument.dart';
 import 'package:dili_video/services/responseHandler.dart';
 import 'package:dili_video/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -183,7 +185,7 @@ class VideoItem extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
       child: GestureDetector(
         onTap: () {
-          Get.toNamed('/video', arguments: item);
+          Get.toNamed('/video', arguments: RouteArgument(TYPE_VIDEO_ITEM, item));
         },
         child: Container(
           clipBehavior: Clip.hardEdge,

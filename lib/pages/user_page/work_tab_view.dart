@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:dili_video/constant/argument_type_constant.dart';
+import 'package:dili_video/entity/route_argument.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -53,7 +55,7 @@ class _WorksState extends State<Works> with AutomaticKeepAliveClientMixin {
           var item = _videoList[index];
           return GestureDetector(
             onTap: () async {
-              Get.toNamed('/video', arguments: item);
+              Get.toNamed('/video', arguments: RouteArgument(TYPE_VIDEO_ITEM, item));
             },
             child: VideoItem(
               coverUrl: item['coverUrl'],

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dili_video/component/RoundedInput.dart';
-import 'package:dili_video/component/video_page/%20comment.dart';
+import 'package:dili_video/component/video_page/comment.dart';
 import 'package:dili_video/controller/RoundedInputController.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';

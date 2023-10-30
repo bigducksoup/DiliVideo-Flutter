@@ -74,8 +74,7 @@ class _VideoPageState extends State<VideoPage>
         item = res['data'];
         status = 1;
       });
-      LocalStorge.addToStringList(
-          "videoHistory" + auth_state.id.value, item['videoInfoId']);
+      LocalStorge.addToStringList("videoHistory" + auth_state.id.value, item['videoInfoId']);
     }
   }
 

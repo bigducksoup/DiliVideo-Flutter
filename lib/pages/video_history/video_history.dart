@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:dili_video/constant/argument_type_constant.dart';
+import 'package:dili_video/entity/route_argument.dart';
 import 'package:dili_video/http/content_api.dart';
 import 'package:dili_video/states/auth_state.dart';
 import 'package:dili_video/theme/colors.dart';
@@ -124,7 +126,7 @@ class _VideoHistoryPageState extends State<VideoHistoryPage> {
             var item = data[index];
             return GestureDetector(
               onTap: () {
-                Get.toNamed('/video', arguments: item);
+                Get.toNamed('/video', arguments: RouteArgument(TYPE_VIDEO_ITEM, item));
               },
               child: VideoItem(
                 coverUrl: item['coverUrl'],

@@ -4,6 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/component/child_module.dart';
 import 'package:dili_video/component/cover_in_post.dart';
 import 'package:dili_video/component/time_formatter.dart';
+import 'package:dili_video/constant/argument_type_constant.dart';
+import 'package:dili_video/entity/route_argument.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/pages/post_detail/post_detail.dart';
 import 'package:flutter/material.dart';
@@ -207,7 +209,8 @@ class _PostItemState extends State<PostItem> with AutomaticKeepAliveClientMixin{
         GestureDetector(
           onTap: () {
             if(typeId == '1'){
-              Get.toNamed('/video', arguments: widget.item['moduleVO']['videoInfoId']);
+              String videoInfoId =  widget.item['moduleVO']['videoInfoId'];
+              Get.toNamed('/video', arguments: RouteArgument(TYPE_VIDEO_ID, videoInfoId));
             }else{
               Get.to(const PostDetailPage(), arguments: widget.item);
             }

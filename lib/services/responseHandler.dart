@@ -12,7 +12,7 @@ import 'package:dili_video/utils/success_fail_dialog_util.dart';
 
   if(res['code']!=200){
     TextToast.showToast(res['msg']);
-    throw Exception();
+    throw Exception(res['msg']);
   }
 
   return res;
