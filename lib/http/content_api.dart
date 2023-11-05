@@ -175,3 +175,15 @@ Future getVideoVosByIds(List<String> ids){
   var response = dio.get("/content/video_info/get_videoInfo_byIdList",data: jsonEncode(ids));
   return response;
 }
+
+
+
+Future getRelatedVideo(String videoInfoId){
+
+    var response = dio.get("/content/recommend/related_video",queryParameters: {
+        "videoInfoId":videoInfoId
+    });
+
+    return response;
+
+}

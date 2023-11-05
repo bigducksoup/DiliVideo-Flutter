@@ -204,18 +204,15 @@ class VideoItem extends StatelessWidget {
                 height: width * 0.7,
                 child: Stack(
                   children: [
-                    Hero(
-                      tag: id,
-                      child: SizedBox(
-                          width: width,
-                          height: width * 0.7,
-                          child: CachedNetworkImage(
-                            imageUrl: coverurl,
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                            fit: BoxFit.cover,
-                          )),
-                    ),
+                    SizedBox(
+                        width: width,
+                        height: width * 0.7,
+                        child: CachedNetworkImage(
+                          imageUrl: coverurl,
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                          fit: BoxFit.cover,
+                        )),
                     Positioned(
                         left: 5,
                         bottom: 5,

@@ -116,9 +116,10 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
           collapseMode: CollapseMode.pin,
           background: Column(
             children: [
-              Image.network(
-                  "https://i0.hdslb.com/bfs/archive/a349e5844a068d9767d699ab4fdbaa16030af585.png",
-                  fit: BoxFit.scaleDown),
+              const SizedBox(
+                width: double.infinity,
+                height: 50,
+              ),
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: Row(

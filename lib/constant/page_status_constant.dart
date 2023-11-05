@@ -15,6 +15,7 @@ class LoadState{
 
 
   int status;
+  
 
   LoadState({this.status = LOADING});
 

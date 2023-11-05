@@ -42,56 +42,86 @@ Tools • Dart 3.0.0 (build 3.0.0-21.0.dev) • DevTools 2.20.0
 
 ## 运行截图
 
-<br/>
 
-![截图](imgs/e24bd351eab49e43c5897282b5c8e395.png)
 
-<br/>
+![首页](./imgs/PAGE-index-TAB-recommand.png)
 
-<br/>
 
-<br/>
 
-![截图](imgs/4959862ab70b8cd0356e7d82c0371c78.png)
 
-<br/>
 
-<br/>
 
-![截图](imgs/f003e30063e371c1790608a342265b7d.png)
 
-<br/>
+![首页](./imgs/PAGE-index-TAB-hot.png)
 
-<br/>
 
-<br/>
 
-![截图](imgs/26bfc66ec4bef07967eb45d8c5cc2bf7.png)
 
-<br/>
 
-<br/>
+![首页](./imgs/PAGE-register.png)
 
-![截图](imgs/7925d74fb835ab1a5a0404233e8f1a2c.png)
 
-<br/>
 
-<br/>
+![首页](./imgs/PAGE-login.png)
 
-![截图](imgs/85e0affe31b8e5da0c6424b724b75e3d.png)
 
-<br/>
 
-<br/>
 
-![截图](imgs/36c464ae3b8bf73b41677d4adf23a07c.png)
 
-<br/>
+![首页](./imgs/PAGE-activity-TAB-post.png)
 
-![截图](imgs/e907eb7350d8eeaf0e52f050cd08d61f.png)
 
-<br/>
 
-<br/>
 
-![截图](imgs/8be591b59ec24ff7f7a4496bbfaec5a1.png)
+
+
+
+![首页](./imgs/PAGE-mine.png)
+
+
+
+
+
+![首页](./imgs/PAGE-post_publish.png)
+
+
+
+
+
+![首页](./imgs/PAGE-post_detail.png)
+
+
+
+
+
+![首页](./imgs/PAGE-search.png)
+
+
+
+
+
+![首页](./imgs/PAGE-user-TAB-published_video.png)
+
+
+
+
+
+![首页](./imgs/PAGE-video_manage.png)
+
+
+
+
+
+![首页](./imgs/PAGE-video_publish.png)
+
+
+
+
+
+![首页](./imgs/PAGE-video-TAB-comment.png)
+
+
+
+
+
+![首页](./imgs/PAGE-video-TAB-info.png)

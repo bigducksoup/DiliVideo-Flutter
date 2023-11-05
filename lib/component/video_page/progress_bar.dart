@@ -40,12 +40,28 @@ class _ProgressBarState extends State<ProgressBar> {
   }
 
 
+  String _digitalProgress(){
+
+  int minute =  (widget.controller.value.position.inSeconds/60).floor();
+  int second = (widget.controller.value.position.inSeconds%60).floor();
+
+  int totalMinute =  (widget.controller.value.duration.inSeconds/60).floor();
+  int totalSecond = (widget.controller.value.duration.inSeconds%60).floor();
+
+
+  return "$minute:$second/$totalMinute:$totalSecond";
+
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             // progress
@@ -58,9 +74,9 @@ class _ProgressBarState extends State<ProgressBar> {
           ),
           
           SizedBox(
-            width: 40,
+            width: 70,
             height: 20,
-            child: Text("${(widget.controller.value.position.inSeconds/60).floor()}:${(widget.controller.value.position.inSeconds%60).toString().padLeft(2,"0")}"),
+            child: Text(_digitalProgress()),
           )
         ],
       ),

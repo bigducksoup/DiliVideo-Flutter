@@ -264,7 +264,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                           return PostCommentItem(
                             params:
                                 CommentDisplayParams.fromJson(comments[index]),
-                            postId: comments[index]['id'],
+                            id: comments[index]['id'],
                             upId: comments[index]['userId'],
                             onClickContent: (content, commentId, userNickName) {
                               //切换回复模式为回复评论

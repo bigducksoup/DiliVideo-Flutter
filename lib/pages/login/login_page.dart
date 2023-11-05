@@ -43,11 +43,11 @@ class _LoginState extends State<Login> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.network(
-                  "https://i0.hdslb.com/bfs/archive/a349e5844a068d9767d699ab4fdbaa16030af585.png",
-                  width: 150,
-                  height: 72,
-                )
+                // Image.network(
+                //   "https://i0.hdslb.com/bfs/archive/a349e5844a068d9767d699ab4fdbaa16030af585.png",
+                //   width: 150,
+                //   height: 72,
+                // )
               ],
             ),
             Container(

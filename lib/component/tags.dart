@@ -1,3 +1,4 @@
+import 'package:dili_video/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 
@@ -23,5 +24,28 @@ class VIPTag extends StatelessWidget {
                             fontWeight: FontWeight.w700),
                       )),
                     );
+  }
+}
+
+
+
+
+
+class IconAndTextTag extends StatelessWidget {
+  const IconAndTextTag({super.key, this.icon, required this.text});
+
+  final IconData? icon;
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        icon!=null? Icon(icon,weight: 8,size: 15,color: thinTextColor,):const SizedBox(),
+        icon!=null?const SizedBox(width: 10,):const SizedBox(),
+        Text(text,style: TextStyle(fontWeight: FontWeight.w500,color: thinTextColor,fontSize: 13),)
+      ],
+    );
   }
 }

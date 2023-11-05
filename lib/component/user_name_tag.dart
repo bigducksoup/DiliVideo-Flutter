@@ -1,3 +1,4 @@
+import 'package:dili_video/component/tags.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -73,4 +74,51 @@ class NickNameTag extends StatelessWidget {
       ],
     );
   }
+}
+
+
+
+
+
+
+
+class NickName extends StatelessWidget {
+  const NickName({super.key, this.size = 20, required this.name, this.color = Colors.white});
+
+  final double? size;
+
+  final String name;
+
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(name,style: TextStyle(fontSize: size,color: color,fontWeight: FontWeight.w400));
+  }
+}
+
+
+
+class FansCount extends StatelessWidget {
+  const FansCount({super.key, required this.fanscount, this.size = 20, this.color = Colors.white});
+
+  final int fanscount;
+
+  final double? size;
+
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconAndTextTag(text: "${handleFansCount(fanscount)}粉丝");
+  }
+
+
+  String handleFansCount(int count){
+    if(count>=10000){
+      return '${(count/10000).toStringAsFixed(1)}万';
+    }
+    return count.toString();
+  }
+
 }

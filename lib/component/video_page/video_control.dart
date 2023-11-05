@@ -3,6 +3,7 @@ import 'package:dili_video/component/buttons.dart';
 import 'package:dili_video/component/video_page/progress_bar.dart';
 import 'package:dili_video/constant/argument_type_constant.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
@@ -85,7 +86,7 @@ class _VideoControlWindowState extends State<VideoControlWindow> {
               height: 20,
               child: ProgressBar(controller: widget.controller),
             )),
-            MyIconButton(onPressed: (){}, icon: Icons.video_label_sharp)
+            FaIconsButton(icon: FontAwesomeIcons.maximize, onPressed: (){})
           ],
         )
       ],
