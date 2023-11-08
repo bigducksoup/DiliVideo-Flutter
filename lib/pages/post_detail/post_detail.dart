@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dili_video/component/RoundedInput.dart';
+import 'package:dili_video/component/commons/RoundedInput.dart';
 import 'package:dili_video/component/child_comment_preview.dart';
-import 'package:dili_video/component/img_grid.dart';
+import 'package:dili_video/component/commons/img_grid.dart';
 import 'package:dili_video/component/post_comment_item.dart';
-import 'package:dili_video/component/time_formatter.dart';
+import 'package:dili_video/component/commons/time_formatter.dart';
 import 'package:dili_video/controller/RoundedInputController.dart';
 import 'package:dili_video/entity/child_comment_preview.dart';
 import 'package:dili_video/entity/comment_params.dart';
@@ -265,7 +265,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                             params:
                                 CommentDisplayParams.fromJson(comments[index]),
                             id: comments[index]['id'],
-                            upId: comments[index]['userId'],
+                            userId: comments[index]['userId'],
                             onClickContent: (content, commentId, userNickName) {
                               //切换回复模式为回复评论
                               switchReplyMode(1,

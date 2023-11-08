@@ -5,7 +5,7 @@ import 'package:dili_video/entity/route_argument.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../component/video_item.dart';
+import '../../component/card/video_item.dart';
 import '../../http/content_api.dart';
 import '../../utils/success_fail_dialog_util.dart';
 
@@ -45,6 +45,7 @@ class _WorksState extends State<Works> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return MediaQuery.removePadding(
       context: context,
       removeTop: true,

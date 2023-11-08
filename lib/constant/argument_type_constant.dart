@@ -15,3 +15,4 @@ const int VIDEO_CONTROL_BIG = 2;
 
 
 
+const String LIVE_ROOM_ID = "LIVE_ROOM_ID";

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/views/home/child/hot_list.dart';
+import 'package:dili_video/views/home/child/live_list.dart';
 import 'package:dili_video/views/home/child/recommand_list.dart';
 import 'package:dili_video/controller/index_page_controller.dart';
 import 'package:dili_video/states/auth_state.dart';
@@ -71,7 +72,7 @@ class _HomeState extends State<Home>
         body: TabBarView(
           controller: _tabController,
           children: const [
-            test(),
+            Live(),
             RecommandList(),
             HotPage()
           ],
@@ -142,28 +143,5 @@ class _HomeState extends State<Home>
 }
 
 
-
-
-
-class test extends StatefulWidget {
-  const test({super.key});
-
-  @override
-  State<test> createState() => _testState();
-}
-
-class _testState extends State<test> {
-
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(itemBuilder:(context, index) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(width: double.infinity,height: 200,color: Colors.amber,),
-      );
-    },itemCount: 200,);
-  }
-}
 
 

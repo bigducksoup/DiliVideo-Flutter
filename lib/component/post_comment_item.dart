@@ -1,7 +1,7 @@
 import 'package:dili_video/component/like.dart';
-import 'package:dili_video/component/time_formatter.dart';
-import 'package:dili_video/component/user_avatar_small.dart';
-import 'package:dili_video/component/user_name_tag.dart';
+import 'package:dili_video/component/commons/time_formatter.dart';
+import 'package:dili_video/component/user/user_avatar.dart';
+import 'package:dili_video/component/user/user_name_tag.dart';
 import 'package:dili_video/entity/comment_params.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:flutter/material.dart';
@@ -11,18 +11,20 @@ class PostCommentItem extends StatefulWidget {
       {super.key,
       required this.params,
       required this.id,
-      required this.upId,
+      required this.userId,
       this.slot,
       this.onClickAvatarAndName,
-      this.onClickContent});
+      this.onClickContent, this.likeType = 0});
 
   final CommentDisplayParams params;
 
   final String id;
 
-  final String upId;
+  final String userId;
 
   final Widget? slot;
+
+  final int? likeType;
 
   final Function(String userId, String userAvatar)? onClickAvatarAndName;
 
@@ -63,7 +65,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
                 NickNameTag(
                   level: widget.params.userLevel,
                   name: widget.params.userNickname,
-                  ifUp: widget.upId == widget.params.userId,
+                  ifUp: widget.userId == widget.params.userId,
                   ifVIP: true,
                   userId: widget.params.userId,
                 ),
@@ -91,7 +93,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
                       size: 20,
                       likeCount: widget.params.likeCount,
                       likeAction: () {
-                        likeAction(0, widget.id);
+                        likeAction(widget.likeType!, widget.id);
                       },
                     ),
                     // TODO like

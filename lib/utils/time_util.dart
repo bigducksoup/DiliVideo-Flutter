@@ -1,7 +1,7 @@
 
 
 
-import 'package:dili_video/component/time_formatter.dart';
+import 'package:dili_video/component/commons/time_formatter.dart';
 
 
 

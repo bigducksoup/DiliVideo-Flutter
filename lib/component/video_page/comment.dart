@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dili_video/component/time_formatter.dart';
+import 'package:dili_video/component/commons/time_formatter.dart';
 import 'package:dili_video/http/main_api.dart';
 import 'package:dili_video/theme/colors.dart';
 import 'package:dili_video/services/router.dart';

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dili_video/component/RoundedInput.dart';
+import 'package:dili_video/component/commons/RoundedInput.dart';
 import 'package:dili_video/component/video_page/comment.dart';
 import 'package:dili_video/controller/RoundedInputController.dart';
 import 'package:dili_video/http/main_api.dart';

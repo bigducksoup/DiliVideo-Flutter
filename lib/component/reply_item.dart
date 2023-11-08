@@ -1,5 +1,5 @@
-import 'package:dili_video/component/time_formatter.dart';
-import 'package:dili_video/component/user_avatar_small.dart';
+import 'package:dili_video/component/commons/time_formatter.dart';
+import 'package:dili_video/component/user/user_avatar.dart';
 import 'package:dili_video/entity/replyVO.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

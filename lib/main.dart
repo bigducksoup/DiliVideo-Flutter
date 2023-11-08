@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dili_video/http/bili/live.dart';
 import 'package:dili_video/pages/publish/publish.dart';
 import 'package:dili_video/pages/register/register.dart';
 import 'package:dili_video/pages/search/search.dart';
@@ -107,6 +108,10 @@ class _IndexPageState extends State<IndexPage> {
     views.add(const Home());
     views.add(const Activity());
     views.add(const Mine());
+
+
+
+
   }
 
   @override

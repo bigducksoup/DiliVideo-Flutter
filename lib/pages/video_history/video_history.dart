@@ -10,7 +10,7 @@ import 'package:dili_video/utils/success_fail_dialog_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../component/video_item.dart';
+import '../../component/card/video_item.dart';
 
 class VideoHistoryPage extends StatefulWidget {
   const VideoHistoryPage({super.key});

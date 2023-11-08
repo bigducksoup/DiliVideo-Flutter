@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dili_video/component/time_formatter.dart';
+import 'package:dili_video/component/commons/time_formatter.dart';
 import 'package:dili_video/component/video_page/comment_tabview.dart';
 import 'package:dili_video/danmu_player/barrage_controller.dart';
 import 'package:dili_video/danmu_player/send_barrage.dart';

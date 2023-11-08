@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
+import '../../../component/card/video_item.dart';
 import '../../../http/content_api.dart';
 
 class RecommandList extends StatefulWidget {
@@ -139,7 +140,7 @@ class TwoVideoInOneRow extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          VideoItem(
+          VideoItemSmall(
             coverurl: item1['coverUrl'],
             plcount: item1['watchCount'],
             authorname: item1['videoAuthorName'],
@@ -147,7 +148,7 @@ class TwoVideoInOneRow extends StatelessWidget {
             id: item1['videoInfoId'],
             item: item1,
           ),
-          VideoItem(
+          VideoItemSmall(
             coverurl: item2['coverUrl'],
             plcount: item2['watchCount'],
             authorname: item2['videoAuthorName'],
@@ -161,117 +162,4 @@ class TwoVideoInOneRow extends StatelessWidget {
   }
 }
 
-class VideoItem extends StatelessWidget {
-  const VideoItem(
-      {super.key,
-      required this.coverurl,
-      required this.plcount,
-      required this.authorname,
-      required this.title,
-      required this.id,
-      this.item});
 
-  final String id;
-  final String coverurl;
-  final int plcount;
-  final String authorname;
-  final String title;
-  final dynamic item;
-
-  @override
-  Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width * 0.96 * 0.51;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-      child: GestureDetector(
-        onTap: () {
-          Get.toNamed('/video', arguments: RouteArgument(TYPE_VIDEO_ITEM, item));
-        },
-        child: Container(
-          clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: maindarkcolor,
-          ),
-          width: width,
-          height: width * 1.15,
-          child: Column(
-            // mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: width,
-                height: width * 0.7,
-                child: Stack(
-                  children: [
-                    SizedBox(
-                        width: width,
-                        height: width * 0.7,
-                        child: CachedNetworkImage(
-                          imageUrl: coverurl,
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                          fit: BoxFit.cover,
-                        )),
-                    Positioned(
-                        left: 5,
-                        bottom: 5,
-                        child: Row(
-                          children: [
-                            const FaIcon(
-                              FontAwesomeIcons.youtube,
-                              color: Colors.white,
-                              size: 15,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              "$plcount",
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w300),
-                            ),
-                          ],
-                        ))
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
-                child: Text(
-                  title,
-                  maxLines: 2,
-                  style: const TextStyle(color: Colors.white, fontSize: 17),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const Expanded(child: SizedBox()),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-                child: Row(
-                  children: [
-                    const FaIcon(
-                      FontAwesomeIcons.user,
-                      color: Colors.white,
-                      size: 15,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      authorname,
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w300),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

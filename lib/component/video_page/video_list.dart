@@ -1,4 +1,4 @@
-import 'package:dili_video/component/video_item.dart';
+import 'package:dili_video/component/card/video_item.dart';
 import 'package:flutter/material.dart';
 
 class VideoList extends StatelessWidget {

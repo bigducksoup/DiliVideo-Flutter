@@ -1,20 +1,20 @@
 import 'dart:async';
 
-import 'package:dili_video/component/RoundedInput.dart';
-import 'package:dili_video/component/buttons.dart';
-import 'package:dili_video/component/enhanced_widget.dart';
+import 'package:dili_video/component/child_comment_preview.dart';
+import 'package:dili_video/component/commons/RoundedInput.dart';
+import 'package:dili_video/component/commons/buttons.dart';
+import 'package:dili_video/component/commons/enhanced_widget.dart';
 import 'package:dili_video/component/like.dart';
 import 'package:dili_video/component/post_comment_item.dart';
-import 'package:dili_video/component/tags.dart';
-import 'package:dili_video/component/time_formatter.dart';
-import 'package:dili_video/component/user_avatar_small.dart';
-import 'package:dili_video/component/user_name_tag.dart';
-import 'package:dili_video/component/video_page/video_control.dart';
+import 'package:dili_video/component/commons/tags.dart';
+import 'package:dili_video/component/user/user_avatar.dart';
+import 'package:dili_video/component/user/user_name_tag.dart';
 import 'package:dili_video/component/video_page/video_list.dart';
 import 'package:dili_video/component/video_page/video_player.dart';
 import 'package:dili_video/constant/argument_type_constant.dart';
 import 'package:dili_video/constant/page_status_constant.dart';
 import 'package:dili_video/controller/RoundedInputController.dart';
+import 'package:dili_video/entity/child_comment_preview.dart';
 import 'package:dili_video/entity/comment_params.dart';
 import 'package:dili_video/entity/route_argument.dart';
 import 'package:dili_video/http/main_api.dart';
@@ -29,6 +29,8 @@ import 'package:video_player/video_player.dart';
 
 import '../../http/content_api.dart';
 
+///Video page
+///contains video player, two tabviews
 class VideoPageRemake extends StatefulWidget {
   const VideoPageRemake({super.key});
 
@@ -221,6 +223,18 @@ class _VideoPageRemakeState extends State<VideoPageRemake>
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 class VideoInfoTabView extends StatefulWidget {
   const VideoInfoTabView({super.key, required this.videoInfo});
 
@@ -301,8 +315,6 @@ class _VideoInfoTabViewState extends State<VideoInfoTabView>
               _buildUserInfo(context),
               _buildVideoInfo(widget.videoInfo),
               _buildActionButtons(),
-              // Text("${widget.videoInfo}"),
-              // Text("${authorInfo}"),
               _buildReleatedVideoList()
             ],
           ),
@@ -488,6 +500,16 @@ class _VideoInfoTabViewState extends State<VideoInfoTabView>
   bool get wantKeepAlive => true;
 }
 
+
+
+
+
+
+
+
+
+
+
 class CommentTabView extends StatefulWidget {
   const CommentTabView({super.key, required this.videoInfo});
 
@@ -534,6 +556,16 @@ class _CommentTabViewState extends State<CommentTabView>
     }
   }
 
+
+  List<ChildPreviewComment> _childList(List data, int index){
+    List<ChildPreviewComment> list = [];
+    for (int i = 0; i < data[index]['children'].length; i++) {
+      Map<String, dynamic> item = data[index]['children'][i];
+      list.add(ChildPreviewComment.fromJson(item));
+    }
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return loadState.render(
@@ -548,7 +580,7 @@ class _CommentTabViewState extends State<CommentTabView>
                 onReachBottom: () async {
                   await _fetchData();
                 },
-                onPullDown: () async{
+                onPullDown: () async {
                   page = 1;
                   setState(() {
                     data.clear();
@@ -558,16 +590,26 @@ class _CommentTabViewState extends State<CommentTabView>
                 slivers: [
                   SliverToBoxAdapter(child: _buildTopBar()),
                   SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                    return PostCommentItem(params: CommentDisplayParams.fromJson(data[index]), id: data[index]['id'], upId: data[index]['userId']);
-                  }, childCount: data.length))
+                      delegate: SliverChildBuilderDelegate( 
+
+                        (context, index) => PostCommentItem(
+                          params: CommentDisplayParams.fromJson(data[index]),
+                          id: data[index]['id'],
+                          userId: data[index]['userId'],
+                          likeType: 2,
+                          slot: ChildCommentListPreview(list: _childList(data, index)),
+                        ),
+                      
+                      childCount: data.length))
                 ],
               ),
             ),
             SizedBox(
               width: double.infinity,
               height: 60,
-              child: RoundedInput(roundedInputController: RoundedInputController(), hintText: "haha"),
+              child: RoundedInput(
+                  roundedInputController: RoundedInputController(),
+                  hintText: "haha"),
             )
           ],
         ));

@@ -1,4 +1,4 @@
-import 'package:dili_video/component/number_formater.dart';
+import 'package:dili_video/component/commons/number_formater.dart';
 import 'package:flutter/material.dart';
 
 ///

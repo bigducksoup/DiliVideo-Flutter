@@ -1,4 +1,4 @@
-import 'package:dili_video/component/RoundedInput.dart';
+import 'package:dili_video/component/commons/RoundedInput.dart';
 import 'package:dili_video/component/reply_item.dart';
 import 'package:dili_video/controller/RoundedInputController.dart';
 import 'package:dili_video/entity/replyVO.dart';

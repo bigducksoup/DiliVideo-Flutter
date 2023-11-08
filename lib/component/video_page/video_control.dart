@@ -1,5 +1,5 @@
 
-import 'package:dili_video/component/buttons.dart';
+import 'package:dili_video/component/commons/buttons.dart';
 import 'package:dili_video/component/video_page/progress_bar.dart';
 import 'package:dili_video/constant/argument_type_constant.dart';
 import 'package:flutter/material.dart';

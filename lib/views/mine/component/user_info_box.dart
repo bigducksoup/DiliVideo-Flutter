@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dili_video/component/tags.dart';
+import 'package:dili_video/component/commons/tags.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

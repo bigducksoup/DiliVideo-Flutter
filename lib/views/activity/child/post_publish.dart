@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dili_video/component/img_picker_warp.dart';
+import 'package:dili_video/component/commons/img_picker_warp.dart';
 import 'package:dili_video/utils/success_fail_dialog_util.dart';
 
 import 'package:flutter/material.dart';

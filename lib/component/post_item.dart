@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dili_video/component/child_module.dart';
-import 'package:dili_video/component/cover_in_post.dart';
-import 'package:dili_video/component/time_formatter.dart';
+import 'package:dili_video/component/card/cover_in_post.dart';
+import 'package:dili_video/component/commons/time_formatter.dart';
 import 'package:dili_video/constant/argument_type_constant.dart';
 import 'package:dili_video/entity/route_argument.dart';
 import 'package:dili_video/http/main_api.dart';
@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-import 'img_grid.dart';
+import 'commons/img_grid.dart';
 
 class PostItem extends StatefulWidget {
   const PostItem({super.key, this.item});
